@@ -4,129 +4,123 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voorman Vacature | J de Jonge</title>
-  <meta name="description" content="J de Jonge zoekt een Voorman. Join The Next Gen Connectors. Word onderdeel van een familiebedrijf waar innovatie en samenwerking de toekomst van engin">
+  <meta name="description" content="J de Jonge zoekt een Voorman in Nederland. Join The Next Gen Connectors. Word onderdeel van een familiebedrijf waar innovatie en samenwerking de toekomst van engin">
   <meta property="og:title" content="Voorman | J de Jonge">
   <meta property="og:description" content="Join The Next Gen Connectors. Word onderdeel van een familiebedrijf waar innovatie en samenwerking de toekomst van engineering vormgeven.">
   <meta property="og:image" content="https://raw.githubusercontent.com/WouterArtsRecruitin/vacaturekanon-landing-pages/main/pages/j-de-jonge-voorman/hero.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #FFFFFF; --fg: #0f172a; --muted: #64748b; --muted-bg: #f8fafc;
-      --accent: #f97316; --accent-dk: #db6513;
-      --hero-bg: #0f172a; --border: #e2e8f0; --radius: 12px;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#FFFFFF;--fg:#0f172a;--muted:#64748b;--muted-bg:#f8fafc;
+      --accent:#f97316;--accent-dk:#db6513;--dark:#0f172a;
+      --border:#e2e8f0;--radius:12px;
     }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--fg); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--fg)}
+    .container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
     /* HEADER */
-    header { position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      background: rgba(15,23,42,0.95); backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.08); }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
-    .logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.25rem; color: white; text-decoration: none; }
-    .logo-accent { color: var(--accent); }
-    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
-    .nav-links a { font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s; }
-    .nav-links a:hover { color: white; }
-    .btn-nav { background: var(--accent); color: white; padding: 10px 20px; border-radius: 8px;
-      font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: background 0.2s; }
-    .btn-nav:hover { background: var(--accent-dk); }
+    header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px}
+    .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.25rem;color:white;text-decoration:none}
+    .logo-accent{color:var(--accent)}
+    .nav-links{display:flex;align-items:center;gap:2rem;list-style:none}
+    .nav-links a{font-size:.875rem;font-weight:500;color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s}
+    .nav-links a:hover{color:white}
+    .btn-nav{background:var(--accent);color:white;padding:10px 20px;border-radius:8px;font-size:.875rem;font-weight:600;text-decoration:none;transition:background .2s}
+    .btn-nav:hover{background:var(--accent-dk)}
     /* HERO */
-    #hero { position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; }
-    .hero-bg { position: absolute; inset: 0; }
-    .hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
-    .hero-bg-overlay { position: absolute; inset: 0; background: linear-gradient(135deg,rgba(10,18,35,0.85) 0%,rgba(15,30,55,0.6) 60%,rgba(10,18,35,0.45) 100%); }
-    .hero-fade { position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to top,var(--bg),transparent); z-index: 2; }
-    .hero-content { position: relative; z-index: 3; padding: 9rem 0 6rem; max-width: 780px; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 100px; background: rgba(249,115,22,0.15); backdrop-filter: blur(4px); margin-bottom: 1.5rem; }
-    .hero-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-    .hero-badge span { font-size: 0.875rem; font-weight: 500; color: white; }
-    h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(3rem,7vw,5rem); font-weight: 700; line-height: 1.05; color: white; margin-bottom: 1.5rem; letter-spacing: -1px; }
-    .hero-sub { font-size: 1.2rem; color: rgba(255,255,255,0.75); line-height: 1.7; margin-bottom: 2rem; max-width: 580px; }
-    .hero-location { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 2.5rem; }
-    .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: white; padding: 14px 28px; border-radius: 8px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: background 0.2s, transform 0.15s; box-shadow: 0 4px 16px rgba(249,115,22,0.4); }
-    .btn-primary:hover { background: var(--accent-dk); transform: translateY(-1px); }
-    .btn-outline { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid rgba(255,255,255,0.3); color: white; padding: 14px 28px; border-radius: 8px; font-size: 1rem; font-weight: 500; text-decoration: none; background: transparent; transition: border-color 0.2s, background 0.2s; }
-    .btn-outline:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.08); }
+    #hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+    .hero-bg{position:absolute;inset:0}
+    .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center top}
+    .hero-bg-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,18,35,.85) 0%,rgba(15,30,55,.6) 60%,rgba(10,18,35,.45) 100%)}
+    .hero-fade{position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,var(--bg),transparent);z-index:2}
+    .hero-content{position:relative;z-index:3;padding:9rem 0 6rem;max-width:780px}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;background:rgba(249,115,22,.15);backdrop-filter:blur(4px);margin-bottom:1.5rem}
+    .hero-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+    .hero-badge span{font-size:.875rem;font-weight:500;color:white}
+    h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(3rem,7vw,5rem);font-weight:700;line-height:1.05;color:white;margin-bottom:1.5rem;letter-spacing:-1px}
+    .hero-sub{font-size:1.2rem;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:2rem;max-width:580px}
+    .hero-location{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.6);font-size:.9rem;margin-bottom:2.5rem}
+    .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
+    .btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:white;padding:14px 28px;border-radius:8px;font-size:1rem;font-weight:600;text-decoration:none;transition:background .2s,transform .15s;box-shadow:0 4px 16px rgba(249,115,22,.4)}
+    .btn-primary:hover{background:var(--accent-dk);transform:translateY(-1px)}
+    .btn-outline{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.3);color:white;padding:14px 28px;border-radius:8px;font-size:1rem;font-weight:500;text-decoration:none;transition:border-color .2s,background .2s}
+    .btn-outline:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.08)}
     /* SECTIONS */
-    section { padding: 6rem 0; }
-    .section-label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 1rem; }
-    h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem,4vw,3rem); font-weight: 700; color: var(--fg); line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 1.25rem; }
-    h2 .accent { color: var(--accent); }
-    .section-sub { font-size: 1.05rem; color: var(--muted); line-height: 1.75; max-width: 600px; }
+    section{padding:6rem 0}
+    .section-label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:1rem}
+    h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--fg);line-height:1.15;letter-spacing:-.5px;margin-bottom:1.25rem}
+    h2 .accent{color:var(--accent)}
+    .section-sub{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:600px}
     /* OVER ONS */
-    .overons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-top: 3.5rem; }
-    .overons-text p { font-size: 0.95rem; line-height: 1.8; color: #475569; margin-bottom: 1.25rem; }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .stat-card { background: var(--muted-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
-    .stat-icon { width: 40px; height: 40px; border-radius: 8px; background: rgba(249,115,22,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 0.75rem; }
-    .stat-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--fg); }
-    .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    .overons-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;margin-top:3.5rem}
+    .overons-text p{font-size:.95rem;line-height:1.8;color:#475569;margin-bottom:1.25rem}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .stat-card{background:var(--muted-bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+    .stat-icon{font-size:1.5rem;margin-bottom:.75rem}
+    .stat-num{font-family:'Space Grotesk',sans-serif;font-size:1.75rem;font-weight:700;color:var(--fg)}
+    .stat-label{font-size:.8rem;color:var(--muted);margin-top:2px}
     /* FUNCTIE */
-    #de-functie { background: var(--muted-bg); }
-    .functie-header { text-align: center; margin-bottom: 3rem; }
-    .functie-header .section-sub { margin: 0 auto; text-align: center; }
-    .functie-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-    .functie-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .functie-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--fg); margin-bottom: 1.5rem; }
-    .functie-list { list-style: none; }
-    .functie-list li { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; line-height: 1.6; color: #475569; }
-    .functie-list li:last-child { border-bottom: none; }
-    .functie-list li::before { content: "✓"; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    #de-functie{background:var(--muted-bg)}
+    .functie-header{text-align:center;margin-bottom:3rem}
+    .functie-header .section-sub{margin:0 auto;text-align:center}
+    .functie-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+    .functie-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+    .functie-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:var(--fg);margin-bottom:1.5rem}
+    .functie-list{list-style:none}
+    .functie-list li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:.9rem;line-height:1.6;color:#475569}
+    .functie-list li:last-child{border-bottom:none}
+    .check{color:var(--accent);font-weight:700;flex-shrink:0;margin-top:1px}
     /* BENEFITS */
-    #aanbod { background: var(--hero-bg); }
-    #aanbod h2 { color: white; }
-    #aanbod .section-label { color: rgba(249,115,22,0.85); }
-    #aanbod .section-sub { color: rgba(255,255,255,0.55); }
-    .benefits-header { text-align: center; margin-bottom: 3rem; }
-    .benefits-header .section-sub { margin: 0 auto; text-align: center; }
-    .benefits-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
-    .benefit-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius); padding: 1.5rem; transition: background 0.2s, transform 0.2s; }
-    .benefit-card:hover { background: rgba(249,115,22,0.08); border-color: rgba(249,115,22,0.25); transform: translateY(-3px); }
-    .benefit-card h4 { font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 0.4rem; }
-    .benefit-card p { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.6; }
-    .benefit-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    #aanbod{background:var(--dark)}
+    #aanbod h2{color:white}
+    #aanbod .section-label{color:rgba(249,115,22,.85)}
+    .benefits-header{text-align:center;margin-bottom:3rem}
+    .benefits-header .section-sub{margin:0 auto;text-align:center;color:rgba(255,255,255,.55)}
+    .benefits-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+    .benefit-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:1.5rem;transition:background .2s,transform .2s}
+    .benefit-card:hover{background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.25);transform:translateY(-3px)}
+    .benefit-card h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700;color:white;margin-bottom:.4rem}
+    .benefit-card p{font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.6}
+    .benefit-icon{font-size:1.5rem;margin-bottom:.75rem}
     /* PROCES */
-    #sollicitatieproces { background: var(--muted-bg); }
-    .proces-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative; margin-top: 3rem; }
-    .proces-line { position: absolute; top: 28px; left: 12.5%; right: 12.5%; height: 2px; background: linear-gradient(to right,var(--accent),rgba(249,115,22,0.3)); z-index: 0; }
-    .proces-step { text-align: center; padding: 0 1rem; position: relative; z-index: 1; }
-    .proces-nr { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.2rem; }
-    .proces-nr.active { background: var(--accent); color: white; box-shadow: 0 4px 16px rgba(249,115,22,0.4); }
-    .proces-nr.inactive { background: white; border: 2px solid var(--accent); color: var(--accent); }
-    .proces-step h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; color: var(--fg); margin-bottom: 0.5rem; }
-    .proces-step p { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
-    .proces-step .tijd { margin-top: 0.75rem; font-size: 0.72rem; color: var(--accent); font-weight: 600; }
+    #sollicitatieproces{background:var(--muted-bg)}
+    .proces-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin-top:3rem}
+    .proces-line{position:absolute;top:28px;left:12.5%;right:12.5%;height:2px;background:linear-gradient(to right,var(--accent),rgba(249,115,22,.3));z-index:0}
+    .proces-step{text-align:center;padding:0 1rem;position:relative;z-index:1}
+    .proces-nr{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem}
+    .active{background:var(--accent);color:white;box-shadow:0 4px 16px rgba(249,115,22,.4)}
+    .inactive{background:white;border:2px solid var(--accent);color:var(--accent)}
+    .proces-step h4{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--fg);margin-bottom:.5rem}
+    .proces-step p{font-size:.83rem;color:var(--muted);line-height:1.6}
+    .tijd{margin-top:.75rem;font-size:.72rem;color:var(--accent);font-weight:600}
     /* SOLLICITEREN */
-    .apply-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 3rem; }
-    .apply-contact { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
-    .apply-contact h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--fg); margin-bottom: 1.5rem; }
-    .contact-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--fg); transition: color 0.2s; }
-    .contact-row:last-child { border-bottom: none; }
-    .contact-row:hover { color: var(--accent); }
-    .contact-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(249,115,22,0.1); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-    .contact-row small { display: block; font-size: 0.72rem; color: var(--muted); }
-    .contact-row strong { font-weight: 600; font-size: 0.9rem; }
-    .apply-cta { background: var(--hero-bg); border-radius: var(--radius); padding: 2.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-    .apply-cta h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 0.75rem; }
-    .apply-cta p { font-size: 0.9rem; color: rgba(255,255,255,0.6); line-height: 1.7; margin-bottom: 2rem; }
-    .apply-cta .btn-primary { width: 100%; justify-content: center; }
+    .apply-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:3rem}
+    .apply-contact{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:2rem}
+    .apply-contact h3{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700;color:var(--fg);margin-bottom:1.5rem}
+    .contact-row{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border);text-decoration:none;color:var(--fg);transition:color .2s}
+    .contact-row:last-child{border-bottom:none}
+    .contact-row:hover{color:var(--accent)}
+    .contact-icon{width:44px;height:44px;border-radius:10px;background:rgba(249,115,22,.1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .contact-row small{display:block;font-size:.72rem;color:var(--muted)}
+    .contact-row strong{font-weight:600;font-size:.9rem}
+    .apply-cta{background:var(--dark);border-radius:var(--radius);padding:2.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .apply-cta h4{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:white;margin-bottom:.75rem}
+    .apply-cta p{font-size:.9rem;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:2rem}
     /* FOOTER */
-    footer { background: var(--hero-bg); color: white; padding: 3rem 0; border-top: 1px solid rgba(255,255,255,0.06); }
-    .footer-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
-    .footer-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem; color: white; }
-    .footer-links { display: flex; gap: 1.5rem; }
-    .footer-links a { font-size: 0.82rem; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.2s; }
-    .footer-links a:hover { color: var(--accent); }
-    .footer-copy { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
-    /* RESPONSIVE */
-    @media (max-width: 900px) {
-      .overons-grid, .functie-grid, .apply-grid { grid-template-columns: 1fr; }
-      .benefits-grid, .proces-steps { grid-template-columns: 1fr 1fr; }
-      .nav-links { display: none; }
+    footer{background:var(--dark);color:white;padding:3rem 0;border-top:1px solid rgba(255,255,255,.06)}
+    .footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+    .footer-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:white}
+    .footer-links{display:flex;gap:1.5rem}
+    .footer-links a{font-size:.82rem;color:rgba(255,255,255,.55);text-decoration:none;transition:color .2s}
+    .footer-links a:hover{color:var(--accent)}
+    .footer-copy{font-size:.8rem;color:rgba(255,255,255,.4)}
+    @media(max-width:900px){
+      .overons-grid,.functie-grid,.apply-grid{grid-template-columns:1fr}
+      .benefits-grid,.proces-steps{grid-template-columns:1fr 1fr}
+      .nav-links{display:none}
     }
   </style>
 </head>
@@ -152,7 +146,7 @@
   <div class="container">
     <div class="hero-content">
       <div class="hero-badge"><span class="dot"></span><span>Vacature · Nu beschikbaar</span></div>
-      <h1>Voorman<br><span style="color:var(--accent)">J</span> de Jonge<span style="color:var(--accent)">.</span></h1>
+      <h1>Voorman<br><span class="logo-accent">J</span> de Jonge<span class="logo-accent">.</span></h1>
       <p class="hero-sub">Join The Next Gen Connectors. Word onderdeel van een familiebedrijf waar innovatie en samenwerking de toekomst van engineering vormgeven.</p>
       <div class="hero-location">📍 Nederland &bull; Fulltime</div>
       <div class="hero-ctas">
@@ -169,31 +163,25 @@
       <div class="overons-text">
         <span class="section-label">Over J de Jonge</span>
         <h2>Creating The Next-Gen Industry <span class="accent"></span></h2>
-        <p>Sinds 1954 is J de Jonge een vertrouwde leider in EPC-contractering.
-Gespecialiseerd in mechanische en piping systemen en laadtechnologie.
-Met locaties in Nederland, België, Duitsland en Saudi-Arabië.</p>
+        <p>Sinds 1954 is J de Jonge een vertrouwde leider in EPC-contractering.<br>Gespecialiseerd in mechanische en piping systemen.<br>Met locaties in Nederland, België, Duitsland en Saudi-Arabië.</p>
       </div>
       <div class="stats-grid"><div class="stat-card">
-      <div class="stat-icon">🏭</div>
-      <div class="stat-num">16.844m²</div>
-      <div class="stat-label">Productiecapaciteit</div>
-    </div>
-<div class="stat-card">
-      <div class="stat-icon">👥</div>
-      <div class="stat-num">217+</div>
-      <div class="stat-label">Medewerkers</div>
-    </div>
-<div class="stat-card">
-      <div class="stat-icon">🏆</div>
-      <div class="stat-num">1954</div>
-      <div class="stat-label">Opgericht</div>
-    </div>
-<div class="stat-card">
-      <div class="stat-icon">🌍</div>
-      <div class="stat-num">55+</div>
-      <div class="stat-label">Culturen</div>
-    </div>
-</div>
+              <div class="stat-icon">🏭</div>
+              <div class="stat-num">16.844m²</div>
+              <div class="stat-label">Productiecapaciteit</div>
+            </div><div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-num">217+</div>
+              <div class="stat-label">Medewerkers</div>
+            </div><div class="stat-card">
+              <div class="stat-icon">🏆</div>
+              <div class="stat-num">1954</div>
+              <div class="stat-label">Opgericht</div>
+            </div><div class="stat-card">
+              <div class="stat-icon">🌍</div>
+              <div class="stat-num">55+</div>
+              <div class="stat-label">Culturen</div>
+            </div></div>
     </div>
   </div>
 </section>
@@ -207,20 +195,11 @@ Met locaties in Nederland, België, Duitsland en Saudi-Arabië.</p>
     <div class="functie-grid">
       <div class="functie-card">
         <h3>🎯 Jouw Taken</h3>
-        <ul class="functie-list"><li>Aansturen en coördineren van montage- en constructieploegen op locatie</li>
-<li>Toezicht houden op kwaliteit en voortgang van mechanische en piping projecten</li>
-<li>Werkplanningen opstellen en bewaken volgens projecteisen</li>
-<li>Communiceren met projectmanagers, opdrachtgevers en onderaannemers</li>
-<li>Zorgen voor een veilige werkomgeving (VCA en bedrijfsrichtlijnen)</li></ul>
+        <ul class="functie-list"><li><span class="check">✓</span>Aansturen en coördineren van montage- en constructieploegen</li><li><span class="check">✓</span>Toezicht houden op kwaliteit en voortgang van projecten</li><li><span class="check">✓</span>Werkplanningen opstellen en bewaken</li><li><span class="check">✓</span>Communiceren met projectmanagers en opdrachtgevers</li><li><span class="check">✓</span>Zorgen voor veilige werkomgeving (VCA)</li></ul>
       </div>
       <div class="functie-card">
         <h3>✅ Wat Wij Vragen</h3>
-        <ul class="functie-list"><li>Minimaal 5 jaar ervaring als voorman in de industriële of EPC-sector</li>
-<li>Relevante technische opleiding (MBO/HBO niveau)</li>
-<li>VCA-VOL certificaat (of bereid om te behalen)</li>
-<li>Ervaring met mechanische installaties, piping en/of storage tanks</li>
-<li>Uitstekende communicatieve en leidinggevende vaardigheden</li>
-<li>Rijbewijs B, bereid tot reizen binnen Nederland en Europa</li></ul>
+        <ul class="functie-list"><li><span class="check">✓</span>Minimaal 5 jaar ervaring in de industriële of EPC-sector</li><li><span class="check">✓</span>Relevante technische opleiding (MBO/HBO)</li><li><span class="check">✓</span>VCA-VOL certificaat</li><li><span class="check">✓</span>Ervaring met mechanische installaties en piping</li><li><span class="check">✓</span>Rijbewijs B</li></ul>
       </div>
     </div>
   </div>
@@ -230,89 +209,77 @@ Met locaties in Nederland, België, Duitsland en Saudi-Arabië.</p>
   <div class="container">
     <div class="benefits-header">
       <span class="section-label">Arbeidsvoorwaarden</span>
-      <h2>Wat wij <span style="color:var(--accent)">bieden</span></h2>
-      <p class="section-sub">Bij J de Jonge investeren we in onze medewerkers</p>
+      <h2 style="color:white">Wat wij <span style="color:var(--accent)">bieden</span></h2>
+      <p class="section-sub">Bij J de Jonge investeren we in onze mensen</p>
     </div>
     <div class="benefits-grid"><div class="benefit-card">
-      <div class="benefit-icon">💰</div>
-      <h4>Competitief Salaris</h4>
-      <p>Marktconform salaris passend bij jouw ervaring en verantwoordelijkheden</p>
-    </div>
-<div class="benefit-card">
-      <div class="benefit-icon">🚗</div>
-      <h4>Bedrijfsauto</h4>
-      <p>Volledige bedrijfsauto of -bus inclusief privégebruik</p>
-    </div>
-<div class="benefit-card">
-      <div class="benefit-icon">📚</div>
-      <h4>Flow Academy</h4>
-      <p>Persoonlijke groei via onze eigen Flow Academy</p>
-    </div>
-<div class="benefit-card">
-      <div class="benefit-icon">🛡️</div>
-      <h4>Pensioenregeling</h4>
-      <p>Uitstekende pensioenregeling voor een zorgeloze toekomst</p>
-    </div>
-<div class="benefit-card">
-      <div class="benefit-icon">🤝</div>
-      <h4>Familie Cultuur</h4>
-      <p>Hechte no-nonsense cultuur met teambuilding en family events</p>
-    </div>
-<div class="benefit-card">
-      <div class="benefit-icon">🌍</div>
-      <h4>Internationale Projecten</h4>
-      <p>Werk aan uitdagende projecten in Nederland, Europa en daarbuiten</p>
-    </div>
-<div class="benefit-card">
-      <div class="benefit-icon">⚡</div>
-      <h4>Innovatieve Technologie</h4>
-      <p>Werk met cutting-edge oplossingen zoals waterstof laadarm</p>
-    </div>
-<div class="benefit-card">
-      <div class="benefit-icon">🌱</div>
-      <h4>Duurzaamheid</h4>
-      <p>Bijdragen aan duurzame projecten — CO₂ Prestatieladder niveau 3</p>
-    </div>
-</div>
+              <div class="benefit-icon">💰</div>
+              <h4>Competitief Salaris</h4>
+              <p>Marktconform salaris passend bij ervaring</p>
+            </div><div class="benefit-card">
+              <div class="benefit-icon">🚗</div>
+              <h4>Bedrijfsauto</h4>
+              <p>Volledige bedrijfsauto inclusief privégebruik</p>
+            </div><div class="benefit-card">
+              <div class="benefit-icon">📚</div>
+              <h4>Flow Academy</h4>
+              <p>Groei via onze eigen Flow Academy</p>
+            </div><div class="benefit-card">
+              <div class="benefit-icon">🛡️</div>
+              <h4>Pensioen</h4>
+              <p>Uitstekende pensioenregeling</p>
+            </div><div class="benefit-card">
+              <div class="benefit-icon">🤝</div>
+              <h4>Team</h4>
+              <p>Hechte no-nonsense familie cultuur</p>
+            </div><div class="benefit-card">
+              <div class="benefit-icon">🌍</div>
+              <h4>Internationaal</h4>
+              <p>Projecten in NL, Europa en worldwide</p>
+            </div><div class="benefit-card">
+              <div class="benefit-icon">⚡</div>
+              <h4>Innovatie</h4>
+              <p>Cutting-edge technologie en systemen</p>
+            </div><div class="benefit-card">
+              <div class="benefit-icon">🌱</div>
+              <h4>Duurzaam</h4>
+              <p>CO₂ Prestatieladder niveau 3</p>
+            </div></div>
   </div>
 </section>
 
-<section id="sollicitatieproces">
+<section id="sollicitatieproces" style="background:var(--muted-bg)">
   <div class="container">
-    <div style="text-align:center;margin-bottom:3.5rem;">
+    <div style="text-align:center;margin-bottom:3.5rem">
       <span class="section-label">Hoe werkt het?</span>
       <h2>Het <span class="accent">sollicitatieproces</span></h2>
-      <p class="section-sub" style="margin:0 auto;text-align:center;">Transparant en snel — van sollicitatie tot jobaanbieding</p>
+      <p class="section-sub" style="margin:0 auto;text-align:center">Transparant en snel — van sollicitatie tot jobaanbieding</p>
     </div>
     <div class="proces-steps">
       <div class="proces-line"></div>
       <div class="proces-step">
-      <div class="proces-nr active">1</div>
-      <h4>Solliciteer</h4>
-      <p>Stuur je CV en korte motivatie naar hr@jdejonge.com</p>
-      <div class="tijd">~1 dag</div>
+              <div class="proces-nr active">1</div>
+              <h4>Solliciteer</h4>
+              <p>Stuur je CV naar hr@jdejonge.com</p>
+              <div class="tijd">~1 dag</div>
+            </div><div class="proces-step">
+              <div class="proces-nr inactive">2</div>
+              <h4>Kennismaking</h4>
+              <p>Telefonisch kennismakingsgesprek (±15 min)</p>
+              <div class="tijd">~3 dagen</div>
+            </div><div class="proces-step">
+              <div class="proces-nr inactive">3</div>
+              <h4>Gesprek</h4>
+              <p>Face-to-face gesprek en rondleiding</p>
+              <div class="tijd">~1 week</div>
+            </div><div class="proces-step">
+              <div class="proces-nr inactive">4</div>
+              <h4>Aanbieding</h4>
+              <p>Welkom bij J de Jonge! Onboarding en start</p>
+              <div class="tijd">~2-3 weken</div>
+            </div>
     </div>
-<div class="proces-step">
-      <div class="proces-nr inactive">2</div>
-      <h4>Kennismaking</h4>
-      <p>Telefonisch kennismakingsgesprek (±15 min) met onze recruiter</p>
-      <div class="tijd">~3 dagen</div>
-    </div>
-<div class="proces-step">
-      <div class="proces-nr inactive">3</div>
-      <h4>Gesprek op kantoor</h4>
-      <p>Face-to-face gesprek + rondleiding en kennismaking met het team</p>
-      <div class="tijd">~1 week</div>
-    </div>
-<div class="proces-step">
-      <div class="proces-nr inactive">4</div>
-      <h4>Jobaanbieding</h4>
-      <p>Welkom in het J de Jonge team! Onboarding en eerste werkdag</p>
-      <div class="tijd">~2-3 weken</div>
-    </div>
-
-    </div>
-    <div style="text-align:center;margin-top:3rem;">
+    <div style="text-align:center;margin-top:3rem">
       <a href="#solliciteren" class="btn-primary">Start jouw sollicitatie →</a>
     </div>
   </div>
@@ -322,11 +289,11 @@ Met locaties in Nederland, België, Duitsland en Saudi-Arabië.</p>
   <div class="container">
     <span class="section-label">Interesse?</span>
     <h2>Solliciteer <span class="accent">direct</span></h2>
-    <p class="section-sub">Ben jij de voorman die wij zoeken? Word onderdeel van de J de Jonge familie!</p>
+    <p class="section-sub">Ben jij de Voorman die wij zoeken? Word onderdeel van de J de Jonge familie!</p>
     <div class="apply-grid">
       <div class="apply-contact">
         <h3>Neem Contact Op</h3>
-        <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.5rem;">Stuur je CV en motivatie, of bel ons voor meer informatie.</p>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.5rem">Stuur je CV en motivatie, of bel ons voor meer informatie.</p>
         <a href="mailto:hr@jdejonge.com" class="contact-row">
           <div class="contact-icon">✉️</div>
           <div><small>E-mail HR</small><strong>hr@jdejonge.com</strong></div>
@@ -334,11 +301,11 @@ Met locaties in Nederland, België, Duitsland en Saudi-Arabië.</p>
         <a href="tel:+31(0)102485800" class="contact-row"><div class="contact-icon">📞</div><div><small>Telefoon</small><strong>+31 (0)10 248 58 00</strong></div></a>
         <a href="https://jdejonge.com/careers" target="_blank" rel="noopener noreferrer" class="contact-row">
           <div class="contact-icon">🌐</div>
-          <div><small>Careers Pagina</small><strong>jdejonge.com/careers</strong></div>
+          <div><small>Careers</small><strong>jdejonge.com/careers</strong></div>
         </a>
       </div>
       <div class="apply-cta">
-        <div style="font-size:3rem;margin-bottom:1.5rem;">🚀</div>
+        <div style="font-size:3rem;margin-bottom:1.5rem">🚀</div>
         <h4>Klaar om te starten?</h4>
         <p>Stuur je sollicitatie en we nemen snel contact met je op.</p>
         <a href="mailto:hr@jdejonge.com?subject=Sollicitatie%20Voorman%20-%20J%20de%20Jonge" class="btn-primary" style="width:100%;justify-content:center;">✉️ Solliciteer Nu</a>
@@ -349,7 +316,7 @@ Met locaties in Nederland, België, Duitsland en Saudi-Arabië.</p>
 
 <footer>
   <div class="container footer-inner">
-    <div class="footer-logo"><span style="color:var(--accent)">J</span> de Jonge<span style="color:var(--accent)">.</span></div>
+    <div class="footer-logo"><span class="logo-accent">J</span> de Jonge<span class="logo-accent">.</span></div>
     <div class="footer-links">
       <a href="https://jdejonge.com" target="_blank" rel="noopener noreferrer">jdejonge.com</a>
       <a href="https://jdejonge.com/careers" target="_blank" rel="noopener noreferrer">Careers</a>
