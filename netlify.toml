@@ -1,20 +1,16 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
     Cache-Control = "public, max-age=300, stale-while-revalidate=60"
 
-# Landing pages: vacaturekanon.nl/bedrijf-functie → pages/bedrijf-functie/index.html
+# /slug → /pages/slug/index.html (rewrite, niet redirect)
 [[redirects]]
   from = "/:slug"
   to = "/pages/:slug/index.html"
   status = 200
-  conditions = {Role = ["public"]}
 
-# Root
 [[redirects]]
-  from = "/"
-  to = "/index.html"
+  from = "/:slug/"
+  to = "/pages/:slug/index.html"
   status = 200
