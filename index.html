@@ -3,18 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vacaturekanon</title>
+  <title>Vacaturekanon — Recruitment Landing Pages</title>
+  <meta name="description" content="Vacaturekanon genereert automatisch professionele recruitment landing pages voor Nederlandse bedrijven.">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: system-ui, sans-serif; background: #111827; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-    .container { text-align: center; }
-    h1 { font-size: 2rem; }
-    span { color: #E85D04; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#0f172a;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .hero{text-align:center;padding:4rem 2rem;max-width:700px}
+    .logo{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:700;letter-spacing:-.02em;margin-bottom:1.5rem}
+    .logo span{color:#f97316}
+    .sub{font-size:1.1rem;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:3rem}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.25);margin-bottom:2rem;font-size:.875rem;color:rgba(255,255,255,.8)}
+    .dot{width:8px;height:8px;border-radius:50%;background:#f97316;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .stats{display:flex;gap:3rem;justify-content:center;margin-top:3rem;flex-wrap:wrap}
+    .stat{text-align:center}
+    .stat-num{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;color:#f97316}
+    .stat-label{font-size:.8rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-top:.25rem}
+    footer{position:fixed;bottom:0;left:0;right:0;text-align:center;padding:1rem;font-size:.75rem;color:rgba(255,255,255,.25)}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>VACATURE<span>KANON</span></h1>
-    <p>Recruitment landing pages worden hier automatisch gegenereerd.</p>
+  <div class="hero">
+    <div class="badge"><span class="dot"></span> Automatisch gegenereerd · AI-powered</div>
+    <div class="logo">VACATURE<span>KANON</span></div>
+    <p class="sub">Professionele recruitment landing pages voor Nederlandse bedrijven — automatisch gegenereerd via AI.</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">AI</div><div class="stat-label">Parsing</div></div>
+      <div class="stat"><div class="stat-num">30s</div><div class="stat-label">Generatietijd</div></div>
+      <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Vacatures</div></div>
+    </div>
   </div>
+  <footer>© 2026 Recruitin B.V. · vacaturekanon.nl</footer>
 </body>
 </html>
