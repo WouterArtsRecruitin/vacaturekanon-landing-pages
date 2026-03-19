@@ -1,0 +1,142 @@
+<!DOCTYPE html><html lang="nl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Duiker-Schilder | Van Oord</title>
+<meta name="description" content="Ben jij een ervaren Duiker-Schilder klaar voor internationale uitdagingen? Start direct bij Van Oord BV!">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--a:#0ea5e9;--d:#0f172a;--m:#64748b;--br:#e2e8f0;--r:12px}
+body{font-family:'Inter',sans-serif;background:#fff;color:var(--d)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+header{position:fixed;inset:0 0 auto;z-index:50;background:rgba(15,23,42,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+.hi{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.25rem;color:#fff;text-decoration:none}
+.la{color:var(--a)}
+.btn{background:var(--a);color:#fff;padding:10px 22px;border-radius:8px;font:.875rem/1 'Inter',sans-serif;font-weight:600;text-decoration:none}
+#hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hbg{position:absolute;inset:0}.hbg img{width:100%;height:100%;object-fit:cover;object-position:center top}
+.ho{position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,18,35,.88),rgba(15,30,55,.5))}
+.hc{position:relative;z-index:2;padding:9rem 0 6rem;max-width:760px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;background:rgba(249,115,22,.15);margin-bottom:1.5rem}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--a);display:inline-block}
+.badge span{font-size:.875rem;color:#fff}
+h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.8rem,6vw,4.8rem);font-weight:700;color:#fff;line-height:1.05;margin-bottom:1.5rem}
+.hs{font-size:1.05rem;color:rgba(255,255,255,.75);line-height:1.72;margin-bottom:1.25rem;max-width:560px}
+.hm{color:rgba(255,255,255,.55);font-size:.9rem;margin-bottom:2.5rem}
+.ctas{display:flex;gap:1rem;flex-wrap:wrap}
+.bp{display:inline-flex;align-items:center;gap:8px;background:var(--a);color:#fff;padding:14px 28px;border-radius:8px;font-size:1rem;font-weight:600;text-decoration:none;box-shadow:0 4px 20px rgba(249,115,22,.4)}
+.bo{display:inline-flex;align-items:center;gap:8px;border:1.5px solid rgba(255,255,255,.3);color:#fff;padding:14px 28px;border-radius:8px;font-size:1rem;text-decoration:none}
+section{padding:5.5rem 0}
+.sl{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--a);margin-bottom:.85rem}
+h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,4vw,2.8rem);font-weight:700;line-height:1.15;margin-bottom:1.1rem}
+.ss{font-size:1rem;color:var(--m);line-height:1.75;max-width:600px}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem}
+.card{background:#fff;border:1px solid var(--br);border-radius:var(--r);padding:2rem;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.2rem}
+ul.list{list-style:none}
+ul.list li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--br);font-size:.88rem;color:#475569;line-height:1.6}
+ul.list li:last-child{border-bottom:none}
+.ck{color:var(--a);font-weight:700;flex-shrink:0}
+#aanbod{background:var(--d)}
+#aanbod h2{color:#fff}
+.bg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}
+.bc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:1.5rem;transition:.2s}
+.bc:hover{background:rgba(249,115,22,.08);border-color:rgba(249,115,22,.25);transform:translateY(-3px)}
+.bi{font-size:1.5rem;margin-bottom:.75rem}
+.bc h4{font-family:'Space Grotesk',sans-serif;font-size:.92rem;color:#fff;margin-bottom:.4rem}
+.bc p{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.6}
+#solliciteren .sg{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem}
+.acc{background:var(--d);border-radius:var(--r);padding:2.5rem;text-align:center}
+.acc h4{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;color:#fff;margin-bottom:.75rem}
+.acc p{font-size:.88rem;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:2rem}
+.cc{border:1px solid var(--br);border-radius:var(--r);padding:2rem}
+.cc h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:1.2rem}
+.cr{display:flex;align-items:center;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--br);text-decoration:none;color:var(--d)}
+.cr:last-child{border-bottom:none}
+.ci{width:44px;height:44px;border-radius:10px;background:rgba(249,115,22,.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.cr small{display:block;font-size:.7rem;color:var(--m)}
+.cr strong{font-weight:600;font-size:.88rem}
+footer{background:var(--d);padding:2.5rem 0}
+.fi{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.cp{font-size:.78rem;color:rgba(255,255,255,.4)}
+@media(max-width:768px){.tc,.sg,.bg-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap hi">
+  <a class="logo" href="#"><span class="la">V</span>an Oord<span class="la">.</span></a>
+  <a class="btn" href="#solliciteren">Solliciteren</a>
+</div></header>
+
+<section id="hero">
+  <div class="hbg"><img src="https://raw.githubusercontent.com/WouterArtsRecruitin/vacaturekanon-landing-pages/main/pages/van-oord-duiker-schilder/hero.jpg" alt="Duiker-Schilder bij Van Oord"><div class="ho"></div></div>
+  <div class="wrap"><div class="hc">
+    <div class="badge"><span class="dot"></span><span>Vacature · Nu beschikbaar</span></div>
+    <h1>Duiker-Schilder<br><span class="la">V</span>an Oord<span class="la">.</span></h1>
+    <p class="hs">Ben jij een ervaren Duiker-Schilder klaar voor internationale uitdagingen? Start direct bij Van Oord BV!</p>
+    <p class="hm">📍 Rotterdam · Fulltime</p>
+    <div class="ctas">
+      <a class="bp" href="#solliciteren">Direct Solliciteren →</a>
+      <a class="bo" href="#de-functie">Bekijk Functie</a>
+    </div>
+  </div></div>
+</section>
+
+<section id="over-ons">
+  <div class="wrap">
+    <span class="sl">Over Van Oord</span>
+    <h2>Duiker-Schilder gezocht voor wereldwijde offshore projecten. <span class="la">.</span></h2>
+    <p class="ss">Van Oord BV is een toonaangevend bedrijf in maritieme infrastructuur. Ze zijn gespecialiseerd in offshore projecten wereldwijd.</p>
+  </div>
+</section>
+
+<section id="de-functie" style="background:#f8fafc">
+  <div class="wrap">
+    <span class="sl">Functieomschrijving</span>
+    <h2>Wat ga je <span class="la">doen?</span></h2>
+    <div class="tc">
+      <div class="card"><h3>🎯 Jouw Taken</h3><ul class="list"><li><span class="ck">✓</span>onderwaterwerk uitvoeren</li><li><span class="ck">✓</span>schilderen van constructies</li><li><span class="ck">✓</span>inspecties</li></ul></div>
+      <div class="card"><h3>✅ Wat Wij Vragen</h3><ul class="list"><li><span class="ck">✓</span>ROV certificaat</li><li><span class="ck">✓</span>5 jaar offshore ervaring</li><li><span class="ck">✓</span>duikbewijs</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="aanbod">
+  <div class="wrap">
+    <span class="sl" style="color:rgba(249,115,22,.9)">Arbeidsvoorwaarden</span>
+    <h2>Wat wij <span class="la">bieden</span></h2>
+    <div class="bg-grid"><div class="bc"><div class="bi">💰</div><h4>Salaris</h4><p>5500-7000 euro plus toeslagen</p></div><div class="bc"><div class="bi">🚗</div><h4>Mobiliteit</h4><p>Lease auto</p></div><div class="bc"><div class="bi">📚</div><h4>Ontwikkeling</h4><p>Opleidingsbudget</p></div><div class="bc"><div class="bi">🛡️</div><h4>Zekerheid</h4><p>Pensioenregeling</p></div><div class="bc"><div class="bi">🤝</div><h4>Team</h4><p>Hecht team</p></div><div class="bc"><div class="bi">🌍</div><h4>Projecten</h4><p>Wereldwijde offshore projecten</p></div></div>
+  </div>
+</section>
+
+<section id="solliciteren">
+  <div class="wrap">
+    <span class="sl">Interesse?</span>
+    <h2>Solliciteer <span class="la">direct</span></h2>
+    <div class="sg">
+      <div class="cc">
+        <h3>Neem contact op</h3>
+        <a class="cr" href="mailto:wouter@recruitin.nl">
+          <div class="ci">✉️</div><div><small>E-mail HR</small><strong>wouter@recruitin.nl</strong></div>
+        </a>
+        
+        <a class="cr" href="https://vanoord.com" target="_blank">
+          <div class="ci">🌐</div><div><small>Website</small><strong>vanoord.com</strong></div>
+        </a>
+      </div>
+      <div class="acc">
+        <div style="font-size:3rem;margin-bottom:1.5rem">🚀</div>
+        <h4>Klaar om te starten?</h4>
+        <p>Stuur je sollicitatie direct naar ons HR-team.</p>
+        <a class="bp" href="mailto:wouter@recruitin.nl?subject=Sollicitatie%20Duiker-Schilder%20-%20Van%20Oord" style="width:100%;justify-content:center">✉️ Solliciteer Nu</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap fi">
+  <div class="logo"><span class="la">V</span>an Oord<span class="la">.</span></div>
+  <span class="cp">© 2026 Van Oord. Alle rechten voorbehouden.</span>
+</div></footer>
+</body></html>
