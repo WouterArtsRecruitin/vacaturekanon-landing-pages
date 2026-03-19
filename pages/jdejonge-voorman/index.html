@@ -70,14 +70,14 @@
       position: absolute; inset: 0;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #243855 100%);
     }
-    /* Subtle pattern overlay */
-    .hero-bg::after {
-      content: '';
+    /* Hero uses real image with dark overlay */
+    .hero-bg img {
       position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(249,115,22,0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(249,115,22,0.06) 1px, transparent 1px);
-      background-size: 80px 80px;
+      width: 100%; height: 100%; object-fit: cover; object-position: center;
+    }
+    .hero-bg-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,18,35,0.82) 0%, rgba(15,30,55,0.65) 60%, rgba(10,18,35,0.5) 100%);
     }
     /* Bottom fade to white */
     .hero-fade {
@@ -393,7 +393,10 @@
 
 <!-- ══ HERO ════════════════════════════════════ -->
 <section id="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg">
+    <img src="https://raw.githubusercontent.com/WouterArtsRecruitin/vacaturekanon-landing-pages/main/pages/jdejonge-voorman/hero.jpg" alt="J de Jonge industrieel project" />
+    <div class="hero-bg-overlay"></div>
+  </div>
   <div class="hero-fade"></div>
   <div class="container">
     <div class="hero-content">
@@ -482,10 +485,9 @@
       <p class="section-sub">Ontdek hoe wij werken aan uitdagende projecten in de industriële sector</p>
     </div>
     <div class="video-wrapper">
-      <!-- Industrial placeholder image with video overlay -->
       <img 
-        src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&q=80" 
-        alt="J de Jonge industrieel project"
+        src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=1200&q=80" 
+        alt="J de Jonge industrieel project - piping en mechanische installaties"
       />
       <div class="video-overlay">
         <button class="play-btn" onclick="this.closest('.video-overlay').style.display='none'">
@@ -572,6 +574,57 @@
           </li>
         </ul>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SOLLICITATIEPROCES ══════════════════════ -->
+<section id="sollicitatieproces" style="background: var(--muted-bg); padding: 6rem 0;">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 3.5rem;">
+      <span class="section-label">Hoe werkt het?</span>
+      <h2>Het <span class="accent">sollicitatieproces</span></h2>
+      <p class="section-sub" style="margin: 0 auto; text-align:center;">Transparant en snel — van sollicitatie tot jobaanbieding in 2–3 weken</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative;">
+      <!-- Connector line -->
+      <div style="position:absolute; top: 28px; left: 12.5%; right: 12.5%; height: 2px; background: linear-gradient(to right, var(--accent), rgba(249,115,22,0.3)); z-index:0;"></div>
+
+      <!-- Step 1 -->
+      <div style="text-align:center; padding: 0 1rem; position:relative; z-index:1;">
+        <div style="width:56px; height:56px; border-radius:50%; background:var(--accent); color:white; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem; box-shadow:0 4px 16px rgba(249,115,22,0.4);">1</div>
+        <h4 style="font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; color:var(--fg); margin-bottom:0.5rem;">Solliciteer</h4>
+        <p style="font-size:0.83rem; color:var(--muted); line-height:1.6;">Stuur je CV en korte motivatie naar hr@jdejonge.com</p>
+        <div style="margin-top:0.75rem; font-size:0.72rem; color:var(--accent); font-weight:600;">~1 dag</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div style="text-align:center; padding: 0 1rem; position:relative; z-index:1;">
+        <div style="width:56px; height:56px; border-radius:50%; background:white; border:2px solid var(--accent); color:var(--accent); font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem;">2</div>
+        <h4 style="font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; color:var(--fg); margin-bottom:0.5rem;">Kennismaking</h4>
+        <p style="font-size:0.83rem; color:var(--muted); line-height:1.6;">Telefonisch kennismakingsgesprek (±15 min) met onze recruiter</p>
+        <div style="margin-top:0.75rem; font-size:0.72rem; color:var(--accent); font-weight:600;">~3 dagen</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div style="text-align:center; padding: 0 1rem; position:relative; z-index:1;">
+        <div style="width:56px; height:56px; border-radius:50%; background:white; border:2px solid var(--accent); color:var(--accent); font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem;">3</div>
+        <h4 style="font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; color:var(--fg); margin-bottom:0.5rem;">Gesprek op kantoor</h4>
+        <p style="font-size:0.83rem; color:var(--muted); line-height:1.6;">Face-to-face gesprek + rondleiding op locatie, kennismaking met het team</p>
+        <div style="margin-top:0.75rem; font-size:0.72rem; color:var(--accent); font-weight:600;">~1 week</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div style="text-align:center; padding: 0 1rem; position:relative; z-index:1;">
+        <div style="width:56px; height:56px; border-radius:50%; background:white; border:2px solid var(--accent); color:var(--accent); font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem;">4</div>
+        <h4 style="font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:700; color:var(--fg); margin-bottom:0.5rem;">Jobaanbieding</h4>
+        <p style="font-size:0.83rem; color:var(--muted); line-height:1.6;">Welkom in het J de Jonge team! Onboarding en eerste werkdag</p>
+        <div style="margin-top:0.75rem; font-size:0.72rem; color:var(--accent); font-weight:600;">~2–3 weken</div>
+      </div>
+    </div>
+    <!-- CTA onder de stappen -->
+    <div style="text-align:center; margin-top:3rem;">
+      <a href="#solliciteren" class="btn-primary" style="display:inline-flex;">Start jouw sollicitatie →</a>
     </div>
   </div>
 </section>
