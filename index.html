@@ -648,9 +648,12 @@
 
     <script>
         // 0. SMOOTH PAGE TRANSITIONS
-        window.addEventListener('load', () => {
-            document.getElementById('page-transition').classList.add('is-loaded');
-        });
+        function revealPage() {
+            document.getElementById('page-transition')?.classList.add('is-loaded');
+        }
+        window.addEventListener('DOMContentLoaded', revealPage);
+        window.addEventListener('load', revealPage);
+        setTimeout(revealPage, 500); // Failsafe fallback
 
         document.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
