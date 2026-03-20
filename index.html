@@ -520,9 +520,25 @@
             transform: scale(1.05) translateY(-5px);
             box-shadow: 0 20px 40px rgba(255,255,255,0.2);
         }
+        /* PAGE TRANSITION OVERLAY */
+        #page-transition {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 99999;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #page-transition.is-loaded {
+            opacity: 0;
+        }
+
     </style>
 </head>
 <body>
+    <div id="page-transition"></div>
     <div class="noise"></div>
 
     <section id="hero">
@@ -628,6 +644,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
+        // 0. SMOOTH PAGE TRANSITIONS
+        window.addEventListener('load', () => {
+            document.getElementById('page-transition').classList.add('is-loaded');
+        });
+
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const target = link.getAttribute('href');
+                // Allow empty or strict hash links to smoothly scroll on the same page
+                if (!target || target.startsWith('#')) return;
+                
+                // Intercept actual page navigation
+                e.preventDefault();
+                document.getElementById('page-transition').classList.remove('is-loaded');
+                setTimeout(() => {
+                    window.location.href = link.href;
+                }, 800);
+            });
+        });
+
         // 1. INIT SMOOTH SCROLL (Lenis)
         const lenis = new Lenis({
             duration: 1.2,
