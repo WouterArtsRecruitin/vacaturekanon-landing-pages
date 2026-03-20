@@ -26,7 +26,7 @@ function httpsRequest(url, method, payload) {
 exports.handler = async function (event, context) {
   const META_APP_SECRET = 'mijn_geheime_verificatie_token_beutech';
   const META_ACCESS_TOKEN = 'EAAYqzG39fnoBQ4g5hkDzZCFTEbpnv9hsMSysmA0wiOyYwcARpje8uPmHeKVj67ZClN9uxXZAQElWZASMqzeS7cBY9sMmbVZAL3jYjTA5sBUn3QC3mIXPOZBrv4LX7juFmKGUypxUPkOXfItRICer8qoOw3lblP2pkjuN4Wy7pnYdWd1HA6uJ43FdQBNEF7sp3nuRbSNiZAPgevcR7cVCPqz8EwZCzD6COZBjYkPkZBFweyJY9uZB2i9KzkKgDfYrH9UQoZCRD8q8ETsCeZAxE6KuBgwPt';
-  const SLACK_URL = "https://hooks.slack." + "com/services/T0992NFJ2NN/" + "B0A8RA09Z70/" + "yfm" + "P12yF7tDWWsZB0u5tjH2l";
+  const s_url = "https://hooks.slack." + "com/services/T0992NFJ2NN/" + "B0A8RA09Z70/" + "yfm" + "P12yF7tDWWsZB0u5tjH2l";
 
   if (event.httpMethod === 'GET') {
     const qs = event.queryStringParameters || {};
@@ -70,10 +70,12 @@ exports.handler = async function (event, context) {
               }
 
               try {
+                  // FORCE OVERRIDE CHANNEL TO #leads-meta !!!
                   const slackPayload = {
-                     text: `🚨 *NIEUWE BEUTECH LEAD BINNEN (Netlify - Native HTTPS)* 🚨\n\n*Naam:* ${name}\n*Telefoon:* ${phone}\n*Woonplaats:* ${city}\n\n👉 _Blijf dit kanaal in de gaten houden!_`
+                     channel: "#leads-meta",
+                     text: `🚨 *NIEUWE BEUTECH LEAD BINNEN (Netlify via Meta App)* 🚨\n\n*Naam:* ${name}\n*Telefoon:* ${phone}\n*Woonplaats:* ${city}\n\n👉 _Blijf dit kanaal in de gaten houden!_`
                   };
-                  await httpsRequest(SLACK_URL, 'POST', slackPayload);
+                  await httpsRequest(s_url, 'POST', slackPayload);
               } catch(slackErr) {
                  console.error("Slack webhook error: ", slackErr);
               }
