@@ -191,9 +191,6 @@
             font-weight: 500;
             color: #ddd;
             margin-bottom: 40px;
-            /* GSAP hides this initially */
-            opacity: 0;
-            transform: translateY(20px);
         }
 
         .hero-title {
@@ -213,7 +210,6 @@
 
         .hero-title .word {
             display: inline-block;
-            transform: translateY(110%);
         }
 
         .hero-title .text-orange {
@@ -228,7 +224,6 @@
             color: var(--muted);
             max-width: 500px;
             margin: 0 auto;
-            opacity: 0;
         }
 
         /* METRICS MARQUEE (Sticky strip) */
@@ -498,11 +493,11 @@
         <div class="hero-content">
             <div class="hero-pill">System Status: Edge Network Active</div>
             <h1 class="hero-title">
-                <span class="line"><span class="word">Recruit.</span></span>
-                <span class="line"><span class="word">Automate.</span></span>
-                <span class="line"><span class="word text-orange">Dominate.</span></span>
+                <span class="line"><span class="word">Werving.</span></span>
+                <span class="line"><span class="word">Volledig.</span></span>
+                <span class="line"><span class="word text-orange">Geautomatiseerd.</span></span>
             </h1>
-            <p class="hero-desc">The absolute pinnacle of B2B deployment. Jotform intake instantly builds landing pages, AI-generated videos, and orchestrates Meta APIs.</p>
+            <p class="hero-desc" style="max-width: 650px; font-size: 1.25rem;">Zet één vacature uit via ons platform en ons systeem bouwt direct de landingspagina, genereert AI video-advertenties en lanceert de Meta campagne. Perfect voor technische B2B recruitment.</p>
         </div>
     </section>
 
@@ -534,31 +529,39 @@
                 <div class="bento-card span-8 bento-reveal">
                     <div class="b-graphic"></div>
                     <div class="b-content">
-                        <div class="bento-icon">⚡</div>
-                        <h3>Netlify Edge Serverless</h3>
+                        <div class="bento-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        </div>
+                        <h3>Edge Speed Landingspagina's</h3>
                         <p>Jouw custom branding code wordt realtime in 90 seconden gecompileerd en wereldwijd beschikbaar gemaakt via het snelste CDN netwerk ter wereld.</p>
                     </div>
                 </div>
 
                 <div class="bento-card span-4 bento-reveal">
                     <div class="b-content">
-                        <div class="bento-icon">🎥</div>
-                        <h3>Kling & Leonardo AI</h3>
+                        <div class="bento-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        </div>
+                        <h3>Kling & Leonardo AI Video</h3>
                         <p>Genereert hyperrealistische B2B Hollywood-kwaliteit video advertenties on-the-fly gebaseerd op de functietitel.</p>
                     </div>
                 </div>
 
                 <div class="bento-card span-4 bento-reveal">
                     <div class="b-content">
-                        <div class="bento-icon">🤖</div>
-                        <h3>Meta Graph API</h3>
+                        <div class="bento-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <h3>Meta Autopilot</h3>
                         <p>A/B test campagnes worden direct door Python in je Facebook Ads manager gestort als PAUSED drafts.</p>
                     </div>
                 </div>
 
                 <div class="bento-card span-8 bento-reveal">
                     <div class="b-content">
-                        <div class="bento-icon">🗄️</div>
+                        <div class="bento-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        </div>
                         <h3>Supabase x Lemlist</h3>
                         <p>Binnenkomende leads (via formulier of lead-ad) vallen direct in Supabase voor KPI tracking, en worden asynchroon naar Lemlist gepusht voor cold-outreach.</p>
                     </div>
@@ -576,8 +579,8 @@
 
     <section id="cta">
         <div class="container">
-            <h2 class="reveal-text">Start The Engine.</h2>
-            <a href="#" class="cta-btn">Book Demo</a>
+            <h2 class="reveal-text">Klaar om recruitment<br>te automatiseren?</h2>
+            <a href="#" class="cta-btn">Vraag een Demo aan</a>
         </div>
     </section>
 
@@ -615,9 +618,9 @@
         // 2. HERO ANIMATIONS (On Load)
         const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
         
-        tl.to('.hero-pill', { opacity: 1, y: 0, duration: 1, delay: 0.2 })
-          .to('.hero-title .word', { y: '0%', duration: 1.2, stagger: 0.15 }, "-=0.8")
-          .to('.hero-desc', { opacity: 1, duration: 1.5 }, "-=0.6");
+        tl.from('.hero-pill', { opacity: 0, y: 20, duration: 1, delay: 0.2 })
+          .from('.hero-title .word', { y: '110%', duration: 1.2, stagger: 0.15 }, "-=0.8")
+          .from('.hero-desc', { opacity: 0, duration: 1.5 }, "-=0.6");
 
         // 3. PARALLAX HERO BACKGROUND
         gsap.to("#hero-bg-parallax", {
