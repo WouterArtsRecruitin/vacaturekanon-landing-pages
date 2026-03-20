@@ -156,29 +156,16 @@
             transform: scale(1.1); /* Prevent edges showing during GSAP parallax */
         }
 
-        .hero-vignette {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at center, transparent 0%, var(--bg) 80%);
-            z-index: 1;
-        }
-
-        .hero-bottom-fade {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 50vh;
-            background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
-            z-index: 2;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 3;
+        /* INTRO SECTION (Right after image) */
+        #introduction {
+            padding: 120px 0 80px 0;
             text-align: center;
-            max-width: 1000px;
-            width: 100%;
+            background: var(--bg);
+            position: relative;
+            z-index: 5;
         }
 
-        .hero-pill {
+        .intro-pill {
             display: inline-flex;
             align-items: center;
             gap: 10px;
@@ -193,8 +180,8 @@
             margin-bottom: 40px;
         }
 
-        .hero-title {
-            font-size: clamp(4rem, 10vw, 10rem);
+        .intro-title {
+            font-size: clamp(4rem, 8vw, 8rem);
             line-height: 0.9;
             letter-spacing: -0.06em;
             margin-bottom: 40px;
@@ -203,26 +190,20 @@
             gap: 0;
         }
 
-        .hero-title .line {
-            overflow: hidden;
-            display: block;
-        }
+        .intro-title .line { overflow: hidden; display: block; }
+        .intro-title .word { display: inline-block; }
 
-        .hero-title .word {
-            display: inline-block;
-        }
-
-        .hero-title .text-orange {
+        .intro-title .text-orange {
             background: linear-gradient(135deg, #FFaa00, #FF5500);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .hero-desc {
+        .intro-desc {
             font-size: clamp(1.1rem, 1.5vw, 1.4rem);
             line-height: 1.6;
             color: var(--muted);
-            max-width: 500px;
+            max-width: 650px;
             margin: 0 auto;
         }
 
@@ -487,17 +468,20 @@
         <div class="hero-bg" id="hero-bg-parallax">
             <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" alt="Tech Background">
         </div>
-        <div class="hero-vignette"></div>
+        <!-- Enkel de fade out voor overgang -->
         <div class="hero-bottom-fade"></div>
+    </section>
 
-        <div class="hero-content">
-            <div class="hero-pill">System Status: Edge Network Active</div>
-            <h1 class="hero-title">
+    <!-- INTRODUCTIE SECTIE ERNA ONDER -->
+    <section id="introduction">
+        <div class="container">
+            <div class="intro-pill">Systeem Status: Online</div>
+            <h1 class="intro-title">
                 <span class="line"><span class="word">Werving.</span></span>
                 <span class="line"><span class="word">Volledig.</span></span>
                 <span class="line"><span class="word text-orange">Geautomatiseerd.</span></span>
             </h1>
-            <p class="hero-desc" style="max-width: 650px; font-size: 1.25rem;">Zet één vacature uit via ons platform en ons systeem bouwt direct de landingspagina, genereert AI video-advertenties en lanceert de Meta campagne. Perfect voor technische B2B recruitment.</p>
+            <p class="intro-desc">Zet één vacature uit via ons platform en de motor bouwt direct de landingspagina, genereert AI video-advertenties en lanceert de slimme Meta campagne. Perfect voor technische B2B recruitment zonder eigen sourcers.</p>
         </div>
     </section>
 
@@ -615,12 +599,20 @@
         gsap.ticker.add((time)=>{ lenis.raf(time * 1000) });
         gsap.ticker.lagSmoothing(0, 0);
 
-        // 2. HERO ANIMATIONS (On Load)
-        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+        // 2. INTRO ANIMATIONS (On Scroll)
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#introduction",
+                start: "top 75%",
+                end: "bottom center",
+                toggleActions: "play none none none"
+            },
+            defaults: { ease: "power4.out" }
+        });
         
-        tl.from('.hero-pill', { opacity: 0, y: 20, duration: 1, delay: 0.2 })
-          .from('.hero-title .word', { y: '110%', duration: 1.2, stagger: 0.15 }, "-=0.8")
-          .from('.hero-desc', { opacity: 0, duration: 1.5 }, "-=0.6");
+        tl.from('.intro-pill', { opacity: 0, y: 20, duration: 1, delay: 0.1 })
+          .from('.intro-title .word', { y: '110%', duration: 1.2, stagger: 0.15 }, "-=0.8")
+          .from('.intro-desc', { opacity: 0, duration: 1.5 }, "-=0.6");
 
         // 3. PARALLAX HERO BACKGROUND
         gsap.to("#hero-bg-parallax", {
