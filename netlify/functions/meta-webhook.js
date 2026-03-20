@@ -1,4 +1,28 @@
 
+const https = require('https');
+
+function httpsRequest(url, method, payload) {
+  return new Promise((resolve, reject) => {
+    const parsedUrl = new URL(url);
+    const options = {
+      hostname: parsedUrl.hostname,
+      path: parsedUrl.pathname + parsedUrl.search,
+      method: method,
+      headers: { 'Content-Type': 'application/json' }
+    };
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => resolve(data));
+    });
+    req.on('error', (e) => reject(e));
+    if (payload) {
+        req.write(JSON.stringify(payload));
+    }
+    req.end();
+  });
+}
+
 exports.handler = async function (event, context) {
   const META_APP_SECRET = 'mijn_geheime_verificatie_token_beutech';
   const META_ACCESS_TOKEN = 'EAAYqzG39fnoBQ4g5hkDzZCFTEbpnv9hsMSysmA0wiOyYwcARpje8uPmHeKVj67ZClN9uxXZAQElWZASMqzeS7cBY9sMmbVZAL3jYjTA5sBUn3QC3mIXPOZBrv4LX7juFmKGUypxUPkOXfItRICer8qoOw3lblP2pkjuN4Wy7pnYdWd1HA6uJ43FdQBNEF7sp3nuRbSNiZAPgevcR7cVCPqz8EwZCzD6COZBjYkPkZBFweyJY9uZB2i9KzkKgDfYrH9UQoZCRD8q8ETsCeZAxE6KuBgwPt';
@@ -27,38 +51,29 @@ exports.handler = async function (event, context) {
             const leadId = change.value?.leadgen_id;
             if (leadId) {
               
-              let name = "Test Lead via Meta-Knop";
-              let phone = "onbekend (Test)";
-              let city = "onbekend (Test)";
+              let name = "Nieuwe Kandidaat (Lead Ads)";
+              let phone = "-";
+              let city = "-";
 
-              // Node 18+ Global Fetch (no node-fetch import needed to prevent missing module errors)
               try {
-                  const fbRes = await fetch(`https://graph.facebook.com/v21.0/${leadId}?access_token=${META_ACCESS_TOKEN}`);
-                  if (fbRes.ok) {
-                      const fullLead = await fbRes.json();
-                      if (fullLead.field_data) {
-                        let fields = {};
-                        fullLead.field_data.forEach(item => { fields[item.name] = item.values[0]; });
-                        if (fields['full_name']) name = fields['full_name'];
-                        if (fields['phone_number']) phone = fields['phone_number'];
-                        if (fields['city']) city = fields['city'];
-                      }
-                  } else {
-                      console.log("Graph API Fetch failed (expected for dummy tests)");
+                  const fbResponse = await httpsRequest(`https://graph.facebook.com/v21.0/${leadId}?access_token=${META_ACCESS_TOKEN}`, 'GET', null);
+                  const fullLead = JSON.parse(fbResponse);
+                  if (fullLead && fullLead.field_data) {
+                    let fields = {};
+                    fullLead.field_data.forEach(item => { fields[item.name] = item.values[0]; });
+                    if (fields['full_name']) name = fields['full_name'];
+                    if (fields['phone_number']) phone = fields['phone_number'];
+                    if (fields['city']) city = fields['city'];
                   }
               } catch (apiErr) {
-                 console.log("Graph API Error:", apiErr);
+                 console.log("Graph API Error (dummy tests miss. valid ID):", apiErr);
               }
 
-              // Sent to Slack!
               try {
-                  await fetch(SLACK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      text: `🚨 *NIEUWE BEUTECH LEAD BINNEN (Live via Netlify)* 🚨\n\n*Naam:* ${name}\n*Telefoon:* ${phone}\n*Woonplaats:* ${city}\n\n👉 _Blijf dit kanaal in de gaten houden!_`
-                    })
-                  });
+                  const slackPayload = {
+                     text: `🚨 *NIEUWE BEUTECH LEAD BINNEN (Netlify - Native HTTPS)* 🚨\n\n*Naam:* ${name}\n*Telefoon:* ${phone}\n*Woonplaats:* ${city}\n\n👉 _Blijf dit kanaal in de gaten houden!_`
+                  };
+                  await httpsRequest(SLACK_URL, 'POST', slackPayload);
               } catch(slackErr) {
                  console.error("Slack webhook error: ", slackErr);
               }
