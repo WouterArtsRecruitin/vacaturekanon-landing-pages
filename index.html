@@ -130,18 +130,20 @@
         /* HERO */
         #hero {
             position: relative;
-            min-height: 120vh;
+            height: 100vh;
+            width: 100vw;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-top: 100px;
             overflow: hidden;
         }
 
         .hero-bg {
             position: absolute;
-            inset: -20% 0 -20% 0; /* Extra space for heavy parallax */
+            inset: 0;
             z-index: 0;
+            width: 100%;
+            height: 100vh;
             will-change: transform;
         }
 
@@ -151,6 +153,7 @@
             object-fit: cover;
             opacity: 0.6;
             filter: contrast(1.1) brightness(0.8);
+            transform: scale(1.1); /* Prevent edges showing during GSAP parallax */
         }
 
         .hero-vignette {
@@ -618,7 +621,7 @@
 
         // 3. PARALLAX HERO BACKGROUND
         gsap.to("#hero-bg-parallax", {
-            yPercent: 30, // Moves down 30% of its height
+            yPercent: 15,
             ease: "none",
             scrollTrigger: {
                 trigger: "#hero",
