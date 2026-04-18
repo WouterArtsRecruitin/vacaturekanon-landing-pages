@@ -900,7 +900,7 @@ function WinScreen({ hits, score, onRetry }) {
         )}
         <div style={{ display: "grid", gap: 14 }}>
           <a
-            href="https://vacaturekanon.nl"
+            href="https://vacaturekanon.nl/"
             target="_blank"
             rel="noopener noreferrer"
             onClick={function () {
@@ -997,7 +997,7 @@ function LoseScreen({ onRetry }) {
         </p>
         <div style={{ display: "grid", gap: 14, marginTop: 28 }}>
           <a
-            href="https://vacaturekanon.nl"
+            href="https://vacaturekanon.nl/"
             target="_blank"
             rel="noopener noreferrer"
             onClick={function () {
