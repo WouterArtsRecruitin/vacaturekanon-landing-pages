@@ -578,8 +578,9 @@ function StartScreen({ onStart }) {
             fontSize: 16,
           }}
         >
-          Raak 8 tech-talenten in 25 seconden. Ze bewegen. Concurrenten azen
-          mee. Vermijd HR. Bouw combo's voor bonus punten. Win korting!
+          Raak 8 tech-talenten in 25 seconden. Maar pas op: een rode Pac-Man
+          concurrent jaagt op dezelfde targets! Vermijd HR. Bouw combo's voor
+          bonus punten. Win korting!
         </p>
         <div style={{ display: "grid", gap: 14, marginBottom: 26 }}>
           {[
@@ -600,6 +601,12 @@ function StartScreen({ onStart }) {
               score: "×2 ×3 ×4",
               note: "klik snel achter elkaar",
               border: "rgba(255,143,53,0.18)",
+            },
+            {
+              label: "PAC-MAN",
+              score: "concurrent",
+              note: "eet jouw tech-talent op",
+              border: "rgba(255,77,77,0.25)",
             },
           ].map(function (r) {
             return (
@@ -1145,6 +1152,14 @@ function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetMiss }) {
         setTargets([]);
         setParticles([]);
         setPopups([]);
+        pacRef.current = {
+          x: randomBetween(10, 90),
+          y: randomBetween(20, 80),
+          dx: 1,
+          targetId: null,
+          chompCd: 0,
+        };
+        setPacman({ x: pacRef.current.x, y: pacRef.current.y, dx: 1, age: 0 });
         return;
       }
       stateRef.current = {
@@ -1156,6 +1171,15 @@ function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetMiss }) {
       setTargets([]);
       setParticles([]);
       setPopups([]);
+      pacRef.current = {
+        x: randomBetween(10, 90),
+        y: randomBetween(20, 80),
+        dx: 1,
+        targetId: null,
+        chompCd: 0,
+      };
+
+      var PAC_SPEED = 18; // % per second
 
       var step = function (now) {
         var s = stateRef.current;
@@ -1167,8 +1191,14 @@ function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetMiss }) {
         var spawns = Math.floor(s.acc / interval);
         if (spawns > 0) s.acc -= spawns * interval;
 
+        // Pac-Man speed ramps up over time
+        var pacSpeed = PAC_SPEED + s.elapsed * 0.3;
+        var pac = pacRef.current;
+        pac.chompCd = Math.max(0, pac.chompCd - dt);
+
         setTargets(function (prev) {
           var next = [];
+          var eaten = null;
           for (var i = 0; i < prev.length; i++) {
             var t = prev[i];
             var u = Object.assign({}, t, { age: t.age + dt });
@@ -1183,8 +1213,60 @@ function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetMiss }) {
             next.push(u);
           }
           for (var j = 0; j < spawns; j++) next.push(createTarget(s.elapsed));
+
+          // Pac-Man AI: find nearest TECH target
+          var nearest = null;
+          var nearDist = Infinity;
+          for (var k = 0; k < next.length; k++) {
+            if (next[k].role === "TECH" && !next[k].flipped) {
+              var ddx = next[k].x - pac.x;
+              var ddy = next[k].y - pac.y;
+              var dist = Math.sqrt(ddx * ddx + ddy * ddy);
+              if (dist < nearDist) {
+                nearDist = dist;
+                nearest = next[k];
+              }
+            }
+          }
+
+          // Move pac-man toward nearest TECH
+          if (nearest) {
+            var mx = nearest.x - pac.x;
+            var my = nearest.y - pac.y;
+            var ml = Math.sqrt(mx * mx + my * my) || 1;
+            pac.x = clamp(pac.x + (mx / ml) * pacSpeed * dt, 4, 96);
+            pac.y = clamp(pac.y + (my / ml) * pacSpeed * dt, 8, 92);
+            pac.dx = mx >= 0 ? 1 : -1;
+
+            // Check collision: eat TECH target
+            if (nearDist < 5 && pac.chompCd <= 0) {
+              eaten = nearest;
+              pac.chompCd = 0.4;
+              next = next.filter(function (t) {
+                return t.id !== nearest.id;
+              });
+            }
+          } else {
+            // Wander randomly when no targets
+            pac.x = clamp(pac.x + pac.dx * pacSpeed * 0.5 * dt, 8, 92);
+            if (pac.x <= 8 || pac.x >= 92) pac.dx = -pac.dx;
+          }
+
+          // Side-effects for eating (queued via setTimeout to avoid setState-in-setState)
+          if (eaten) {
+            setTimeout(function () {
+              sfx.chomp();
+              spawnParticles(eaten.x, eaten.y, BRAND.negative, 8);
+              spawnPopup(eaten.x, eaten.y, "OPGEGETEN!", BRAND.negative);
+              doShake(4);
+            }, 0);
+          }
+
           return next;
         });
+
+        // Update pac-man render state
+        setPacman({ x: pac.x, y: pac.y, dx: pac.dx, age: s.elapsed });
 
         // update particles
         setParticles(function (prev) {
@@ -1296,6 +1378,7 @@ function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetMiss }) {
       {targets.map(function (t) {
         return <TargetCard key={t.id} target={t} onClick={handleClick} />;
       })}
+      {isPlaying && <PacManSprite pacman={pacman} />}
       {particles.map(function (p) {
         return <Particle key={p.id} p={p} />;
       })}
