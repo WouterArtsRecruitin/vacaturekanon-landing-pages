@@ -37,23 +37,21 @@
       @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0px); } 50% { transform: translateX(-50%) translateY(-2px); } }
       @keyframes wave { 0%, 100% { transform: translateX(-50%) rotate(0deg); } 25% { transform: translateX(-50%) rotate(5deg); } 75% { transform: translateX(-50%) rotate(-5deg); } }
       @keyframes walk { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(1px); } }
+      @keyframes pulseBar { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
     </style>
   </head>
   <body>
     <div id="root"></div>
     <script
       crossorigin
-      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
       src="https://unpkg.com/react@18.3.1/umd/react.development.js"
     ></script>
     <script
       crossorigin
-      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
       src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
     ></script>
     <script
       crossorigin
-      integrity="sha384-YZtdPfO5msHvibGV8oIvKzRlNgCRYCjRSSXXD6Z7G2JZ4pDN8iTIB006X/budoo3"
       src="https://unpkg.com/@babel/standalone@7.25.0/babel.min.js"
     ></script>
     <script type="text/babel" src="game.jsx"></script>

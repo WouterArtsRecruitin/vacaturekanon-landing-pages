@@ -1,4 +1,4 @@
-const { useState, useEffect, useRef, useMemo } = React;
+const { useState, useEffect, useRef, useCallback } = React;
 
 const LOGO_SRC = "assets/logo-recruitin.png";
 const FACEBOOK_PIXEL_ID = "FB_PIXEL_ID";
@@ -21,20 +21,78 @@ const BRAND = {
   negative: "#ff4d4d",
 };
 
+/* ── helpers ── */
 const randomBetween = (min, max) => Math.random() * (max - min) + min;
-const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-const formatTimer = (seconds) => {
-  const s = Math.max(0, Math.ceil(seconds));
-  return `${s}s`;
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+const formatTimer = (s) => Math.max(0, Math.ceil(s)) + "s";
+const uid = (() => {
+  let n = 0;
+  return () => ++n;
+})();
+
+const trackEvent = (name, payload = {}) => {
+  console.log("[FB Pixel]", name, payload);
+  if (typeof window !== "undefined" && window.fbq)
+    window.fbq("track", name, payload);
 };
 
-const trackEvent = (eventName, payload = {}) => {
-  console.log("[FB Pixel Event]", eventName, payload);
-  if (typeof window !== "undefined" && window.fbq) {
-    window.fbq("track", eventName, payload);
-  }
+/* ── Web Audio SFX ── */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let _actx = null;
+const actx = () => {
+  if (!_actx) _actx = new AudioCtx();
+  return _actx;
 };
 
+function playTone(freq, dur, type, vol) {
+  try {
+    const ctx = actx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || "square";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol || 0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + dur);
+  } catch (_) {}
+}
+
+const sfx = {
+  hit() {
+    playTone(880, 0.08, "square", 0.1);
+    playTone(1320, 0.06, "sine", 0.06);
+  },
+  miss() {
+    playTone(220, 0.18, "sawtooth", 0.08);
+  },
+  combo() {
+    playTone(1200, 0.06, "sine", 0.1);
+    playTone(1600, 0.05, "sine", 0.08);
+  },
+  start() {
+    playTone(660, 0.12, "triangle", 0.08);
+  },
+  win() {
+    playTone(880, 0.15, "sine", 0.1);
+    setTimeout(() => playTone(1320, 0.2, "sine", 0.1), 150);
+  },
+  lose() {
+    playTone(180, 0.35, "sawtooth", 0.1);
+  },
+  tick() {
+    playTone(440, 0.04, "sine", 0.05);
+  },
+  chomp() {
+    playTone(260, 0.06, "square", 0.09);
+    setTimeout(function () {
+      playTone(200, 0.08, "square", 0.07);
+    }, 70);
+  },
+};
+
+/* ── BlueprintBg ── */
 function BlueprintBg() {
   return (
     <div
@@ -51,7 +109,7 @@ function BlueprintBg() {
           width: "100%",
           height: "100%",
           background:
-            "radial-gradient(circle at top left, rgba(255, 140, 34, 0.14), transparent 24%), radial-gradient(circle at bottom right, rgba(99, 102, 241, 0.18), transparent 26%)",
+            "radial-gradient(circle at top left, rgba(255,140,34,0.14), transparent 24%), radial-gradient(circle at bottom right, rgba(99,102,241,0.18), transparent 26%)",
         }}
       />
       <div
@@ -67,314 +125,388 @@ function BlueprintBg() {
   );
 }
 
-function CrosshairCursor() {
+/* ── Particle ── */
+function Particle({ p }) {
   return (
     <div
       style={{
         position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: 44,
-        height: 44,
-        transform: "translate(-50%, -50%)",
+        left: p.x,
+        top: p.y,
+        width: p.size,
+        height: p.size,
+        borderRadius: "50%",
+        background: p.color,
         pointerEvents: "none",
-        zIndex: 10,
+        opacity: p.opacity,
+        transform: "translate(-50%,-50%)",
+        zIndex: 20,
+      }}
+    />
+  );
+}
+
+/* ── Score Popup ── */
+function ScorePopup({ popup }) {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: popup.x,
+        top: popup.y,
+        transform: "translate(-50%,-50%)",
+        pointerEvents: "none",
+        zIndex: 25,
+        fontFamily: "Archivo Black, sans-serif",
+        fontSize: popup.combo > 1 ? 28 : 22,
+        color: popup.color,
+        textShadow: "0 0 12px " + popup.color + "60",
+        opacity: popup.opacity,
       }}
     >
+      {popup.text}
+    </div>
+  );
+}
+
+/* ── Pac-Man (de concurrent) ── */
+function PacManSprite({ pacman }) {
+  var mouth = Math.abs(Math.sin(pacman.age * 12)) * 35 + 5;
+  var facingLeft = pacman.dx < 0;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: pacman.x + "%",
+        top: pacman.y + "%",
+        transform: "translate(-50%,-50%)",
+        zIndex: 15,
+        pointerEvents: "none",
+        transition: "left 0.08s linear, top 0.08s linear",
+      }}
+    >
+      {/* Label */}
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          border: "1px solid rgba(255,255,255,0.25)",
-          borderRadius: "50%",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
+          top: -20,
           left: "50%",
-          top: "50%",
-          width: 2,
-          height: 20,
-          background: "rgba(255,255,255,0.75)",
           transform: "translateX(-50%)",
+          whiteSpace: "nowrap",
+          fontSize: 10,
+          letterSpacing: "0.12em",
+          fontFamily: "Archivo Black, sans-serif",
+          color: "#ff4d4d",
+          textShadow: "0 0 8px rgba(255,77,77,0.5)",
+        }}
+      >
+        CONCURRENT
+      </div>
+      {/* Pac-Man SVG */}
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 40 40"
+        style={{
+          transform: facingLeft ? "scaleX(-1)" : "none",
+          filter: "drop-shadow(0 0 8px rgba(255,77,77,0.4))",
+        }}
+      >
+        <circle cx="20" cy="20" r="18" fill="#ff4d4d" />
+        {/* mouth cutout */}
+        <path
+          d={
+            "M20,20 L38," +
+            (20 - mouth * 0.5) +
+            " L38," +
+            (20 + mouth * 0.5) +
+            " Z"
+          }
+          fill="#0f1012"
+        />
+        {/* eye */}
+        <circle cx="24" cy="12" r="3" fill="#0f1012" />
+        <circle cx="24" cy="12" r="1.5" fill="white" />
+      </svg>
+    </div>
+  );
+}
+
+/* ── Animated Figure ── */
+function AnimatedFigure({ isTech, color, age }) {
+  const bounce = Math.sin(age * 6) * 2;
+  const armWave = Math.sin(age * 5) * 8;
+  const legL = Math.sin(age * 8) * 2;
+  const legR = -legL;
+  return (
+    <div
+      style={{
+        width: 36,
+        height: 36,
+        position: "relative",
+        margin: "0 auto 6px",
+      }}
+    >
+      {/* Head */}
+      <div
+        style={{
+          width: 13,
+          height: 13,
+          borderRadius: "50%",
+          background: color,
+          position: "absolute",
+          top: bounce,
+          left: "50%",
+          transform: "translateX(-50%)",
+          boxShadow: "0 0 10px " + color + "50",
+          transition: "top 0.08s",
+        }}
+      />
+      {/* Body */}
+      <div
+        style={{
+          width: 9,
+          height: 14,
+          background: color,
+          position: "absolute",
+          top: 11,
+          left: "50%",
+          transform: "translateX(-50%)",
+          borderRadius: "4px 4px 2px 2px",
+          opacity: 0.9,
+        }}
+      />
+      {/* Arms */}
+      <div
+        style={{
+          width: 18,
+          height: 3,
+          background: color,
+          position: "absolute",
+          top: 15,
+          left: "50%",
+          transform:
+            "translateX(-50%) rotate(" + (isTech ? armWave : 0) + "deg)",
+          borderRadius: 2,
+          opacity: 0.8,
+          transition: "transform 0.08s",
+          transformOrigin: "center",
+        }}
+      />
+      {/* Legs */}
+      <div
+        style={{
+          width: 3,
+          height: 7,
+          background: color,
+          position: "absolute",
+          top: 23 + (isTech ? legL : 0),
+          left: 11,
+          borderRadius: 2,
+          opacity: 0.7,
+          transition: "top 0.08s",
         }}
       />
       <div
         style={{
+          width: 3,
+          height: 7,
+          background: color,
           position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: 20,
-          height: 2,
-          background: "rgba(255,255,255,0.75)",
-          transform: "translateY(-50%)",
+          top: 23 + (isTech ? legR : 0),
+          left: 22,
+          borderRadius: 2,
+          opacity: 0.7,
+          transition: "top 0.08s",
         }}
       />
     </div>
   );
 }
 
+/* ── TargetCard ── */
 function TargetCard({ target, onClick }) {
-  const isActiveTech = target.role === "TECH" && !target.flipped;
   const isSkip = target.role === "HR" || target.flipped;
-  const cardColor = isSkip ? "#ff4d4d" : "#64d3ff";
-  const label = target.role;
-
-  const cardStyles = {
-    position: "absolute",
-    left: `${target.x}%`,
-    top: `${target.y}%`,
-    transform: "translate(-50%, -50%)",
-    width: 118,
-    minWidth: 118,
-    padding: "16px 18px",
-    borderRadius: 20,
-    border: `2px solid ${isSkip ? "rgba(255,77,77,0.3)" : "rgba(100,211,255,0.35)"}`,
-    background: "rgba(6,7,10,0.95)",
-    boxShadow: `0 18px 40px ${isSkip ? "rgba(255,77,77,0.12)" : "rgba(100,211,255,0.12)"}`,
-    color: BRAND.text,
-    cursor: "pointer",
-    transition: "transform 0.14s ease, box-shadow 0.14s ease",
-    zIndex: target.contested ? 7 : 5,
-    animation: isActiveTech ? "float 2s ease-in-out infinite" : isSkip ? "pulse 1.5s ease-in-out infinite" : "none",
-  };
-
-  const ring = target.contested ? (
-    <span
-      style={{
-        position: "absolute",
-        inset: -12,
-        borderRadius: "50%",
-        border: `2px solid rgba(255, 94, 94, 0.55)`,
-        animation: "ringExpand 0.9s ease-out infinite",
-        opacity: 0.9,
-      }}
-    />
-  ) : null;
-
-  const flippedBadge = target.flipped ? (
-    <span
-      style={{
-        marginTop: 8,
-        display: "inline-flex",
-        fontSize: 10,
-        textTransform: "uppercase",
-        letterSpacing: "0.16em",
-        color: "#ffa36f",
-        opacity: 0.95,
-      }}
-    >
-      TECH → HR
-    </span>
-  ) : null;
-
-  // Animated figure component
-  const AnimatedFigure = ({ isTech, color }) => (
-    <div style={{
-      width: 32,
-      height: 32,
-      position: "relative",
-      margin: "0 auto 8px",
-    }}>
-      {/* Head */}
-      <div style={{
-        width: 12,
-        height: 12,
-        borderRadius: "50%",
-        background: color,
-        position: "absolute",
-        top: 0,
-        left: "50%",
-        transform: "translateX(-50%)",
-        boxShadow: `0 0 8px ${color}40`,
-        animation: isTech ? "bounce 1s ease-in-out infinite" : "none",
-      }} />
-
-      {/* Body */}
-      <div style={{
-        width: 8,
-        height: 14,
-        background: color,
-        position: "absolute",
-        top: 10,
-        left: "50%",
-        transform: "translateX(-50%)",
-        borderRadius: "4px 4px 2px 2px",
-        opacity: 0.9,
-      }} />
-
-      {/* Arms */}
-      <div style={{
-        width: 16,
-        height: 3,
-        background: color,
-        position: "absolute",
-        top: 14,
-        left: "50%",
-        transform: "translateX(-50%)",
-        borderRadius: "2px",
-        opacity: 0.8,
-        animation: isTech ? "wave 1.2s ease-in-out infinite" : "none",
-      }} />
-
-      {/* Legs */}
-      <div style={{
-        width: 3,
-        height: 6,
-        background: color,
-        position: "absolute",
-        top: 22,
-        left: 10,
-        borderRadius: "2px",
-        opacity: 0.7,
-        animation: isTech ? "walk 0.8s ease-in-out infinite" : "none",
-      }} />
-      <div style={{
-        width: 3,
-        height: 6,
-        background: color,
-        position: "absolute",
-        top: 22,
-        right: 10,
-        borderRadius: "2px",
-        opacity: 0.7,
-        animation: isTech ? "walk 0.8s ease-in-out infinite reverse" : "none",
-      }} />
-    </div>
-  );
+  const color = isSkip ? BRAND.negative : BRAND.highlight;
+  const lifeRatio = 1 - target.age / target.lifetime;
 
   return (
-    <button type="button" onClick={() => onClick(target.id)} style={cardStyles}>
-      {ring}
-      <div
-        style={{ display: "grid", gap: 8, textAlign: "center", width: "100%" }}
-      >
-        <AnimatedFigure isTech={isActiveTech} color={cardColor} />
-
-        <div
+    <button
+      type="button"
+      onClick={() => onClick(target.id)}
+      style={{
+        position: "absolute",
+        left: target.x + "%",
+        top: target.y + "%",
+        transform: "translate(-50%,-50%)",
+        width: 120,
+        padding: "14px 16px",
+        borderRadius: 20,
+        border:
+          "2px solid " +
+          (isSkip ? "rgba(255,77,77,0.35)" : "rgba(100,211,255,0.35)"),
+        background: "rgba(6,7,10,0.95)",
+        boxShadow:
+          "0 14px 30px " +
+          (isSkip ? "rgba(255,77,77,0.12)" : "rgba(100,211,255,0.12)"),
+        color: BRAND.text,
+        cursor: "pointer",
+        transition: "transform 0.12s, box-shadow 0.12s, opacity 0.15s",
+        zIndex: target.contested ? 7 : 5,
+        opacity: lifeRatio < 0.2 ? lifeRatio * 5 : 1,
+      }}
+    >
+      {target.contested && (
+        <span
           style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: 6,
-            alignItems: "center",
+            position: "absolute",
+            inset: -12,
+            borderRadius: "50%",
+            border: "2px solid rgba(255,94,94,0.55)",
+            animation: "ringExpand 0.9s ease-out infinite",
+          }}
+        />
+      )}
+      <div
+        style={{ display: "grid", gap: 6, textAlign: "center", width: "100%" }}
+      >
+        <AnimatedFigure isTech={!isSkip} color={color} age={target.age} />
+        <span
+          style={{
+            fontFamily: "Archivo Black, sans-serif",
+            fontSize: 13,
+            letterSpacing: "0.2em",
+            color: color,
           }}
         >
+          {target.role}
+        </span>
+        <div style={{ fontSize: 11, lineHeight: 1.4, color: BRAND.muted }}>
+          {isSkip ? "Vermijd — recruiter" : "Raak snel — tech talent"}
+        </div>
+        {target.flipped && (
           <span
-            style={{
-              fontFamily: "Archivo Black, sans-serif",
-              fontSize: 12,
-              letterSpacing: "0.24em",
-              color: cardColor,
-            }}
+            style={{ fontSize: 10, letterSpacing: "0.14em", color: "#ffa36f" }}
           >
-            {label}
+            TECH → HR
           </span>
-        </div>
-        <div style={{ fontSize: 12, lineHeight: 1.4, color: BRAND.muted }}>
-          {target.role === "TECH" && target.flipped
-            ? "Flipped midway → vermijd deze tech"
-            : target.role === "HR"
-              ? "Recruiter / HR — niet raken"
-              : "Tech talent — raak snel"}
-        </div>
-        {flippedBadge}
-        <div style={{ fontSize: 10, color: BRAND.muted }}>
-          {target.contested
-            ? "Concurrentie binnen 0.6s"
-            : `Verdwijnt in ${Math.max(0, Math.ceil(target.lifetime - target.age))}s`}
+        )}
+        {/* life bar */}
+        <div
+          style={{
+            height: 3,
+            borderRadius: 2,
+            background: "rgba(255,255,255,0.06)",
+            overflow: "hidden",
+            marginTop: 2,
+          }}
+        >
+          <div
+            style={{
+              height: "100%",
+              borderRadius: 2,
+              width: lifeRatio * 100 + "%",
+              background: isSkip ? BRAND.negative : BRAND.highlight,
+              transition: "width 0.15s linear",
+            }}
+          />
         </div>
       </div>
     </button>
   );
 }
 
-function HUD({ hits, goal, timeLeft, score }) {
+/* ── HUD with timer bar ── */
+function HUD({ hits, goal, timeLeft, score, combo }) {
+  const pct = Math.max(0, timeLeft / GAME_DURATION) * 100;
+  const urgent = timeLeft < 6;
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-        gap: 14,
-        padding: "18px 20px",
-        borderRadius: 24,
-        border: `1px solid ${BRAND.panelBorder}`,
-        background: BRAND.panel,
-        backdropFilter: "blur(14px)",
-        color: BRAND.text,
-        marginBottom: 18,
-      }}
-    >
-      <div>
-        <p
-          style={{
-            margin: 0,
-            fontSize: 11,
-            textTransform: "uppercase",
-            letterSpacing: "0.18em",
-            color: BRAND.muted,
-          }}
-        >
-          Hits
-        </p>
-        <p
-          style={{
-            margin: "10px 0 0",
-            fontSize: 24,
-            fontFamily: "Archivo Black, sans-serif",
-          }}
-        >
-          {hits} / {goal}
-        </p>
+    <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: 12,
+          padding: "16px 18px",
+          borderRadius: 22,
+          border: "1px solid " + BRAND.panelBorder,
+          background: BRAND.panel,
+          backdropFilter: "blur(14px)",
+          color: BRAND.text,
+        }}
+      >
+        {[
+          { label: "Hits", value: hits + " / " + goal },
+          {
+            label: "Tijd",
+            value: formatTimer(timeLeft),
+            color: urgent ? BRAND.danger : undefined,
+          },
+          { label: "Score", value: score },
+          {
+            label: "Combo",
+            value: combo > 1 ? combo + "x" : "—",
+            color: combo > 2 ? BRAND.accent : undefined,
+          },
+        ].map(function (item) {
+          return (
+            <div key={item.label}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 11,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.18em",
+                  color: BRAND.muted,
+                }}
+              >
+                {item.label}
+              </p>
+              <p
+                style={{
+                  margin: "8px 0 0",
+                  fontSize: 22,
+                  fontFamily: "Archivo Black, sans-serif",
+                  color: item.color || BRAND.text,
+                }}
+              >
+                {item.value}
+              </p>
+            </div>
+          );
+        })}
       </div>
-      <div>
-        <p
+      {/* timer bar */}
+      <div
+        style={{
+          height: 5,
+          borderRadius: 3,
+          background: "rgba(255,255,255,0.06)",
+          overflow: "hidden",
+        }}
+      >
+        <div
           style={{
-            margin: 0,
-            fontSize: 11,
-            textTransform: "uppercase",
-            letterSpacing: "0.18em",
-            color: BRAND.muted,
+            height: "100%",
+            borderRadius: 3,
+            width: pct + "%",
+            background: urgent
+              ? "linear-gradient(90deg, " + BRAND.danger + ", #ff4d4d)"
+              : "linear-gradient(90deg, " +
+                BRAND.accent +
+                ", " +
+                BRAND.highlight +
+                ")",
+            transition: "width 0.3s linear",
+            animation: urgent ? "pulseBar 0.5s ease-in-out infinite" : "none",
           }}
-        >
-          Tijd
-        </p>
-        <p
-          style={{
-            margin: "10px 0 0",
-            fontSize: 24,
-            fontFamily: "Archivo Black, sans-serif",
-          }}
-        >
-          {formatTimer(timeLeft)}
-        </p>
-      </div>
-      <div>
-        <p
-          style={{
-            margin: 0,
-            fontSize: 11,
-            textTransform: "uppercase",
-            letterSpacing: "0.18em",
-            color: BRAND.muted,
-          }}
-        >
-          Score
-        </p>
-        <p
-          style={{
-            margin: "10px 0 0",
-            fontSize: 24,
-            fontFamily: "Archivo Black, sans-serif",
-          }}
-        >
-          {score}
-        </p>
+        />
       </div>
     </div>
   );
 }
 
+/* ── Screens ── */
 function StartScreen({ onStart }) {
   return (
     <div
@@ -393,7 +525,7 @@ function StartScreen({ onStart }) {
           width: "100%",
           maxWidth: 680,
           borderRadius: 32,
-          border: `1px solid ${BRAND.panelBorder}`,
+          border: "1px solid " + BRAND.panelBorder,
           background: "rgba(15,17,18,0.98)",
           padding: 34,
           boxShadow: "0 36px 80px rgba(0,0,0,0.35)",
@@ -447,85 +579,71 @@ function StartScreen({ onStart }) {
           }}
         >
           Raak 8 tech-talenten in 25 seconden. Ze bewegen. Concurrenten azen
-          mee. Vermijd HR. Win korting.
+          mee. Vermijd HR. Bouw combo's voor bonus punten. Win korting!
         </p>
         <div style={{ display: "grid", gap: 14, marginBottom: 26 }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "baseline",
-              gap: 16,
-              padding: 18,
-              borderRadius: 20,
-              background: "rgba(255,255,255,0.03)",
-              border: `1px solid rgba(100,211,255,0.12)`,
-            }}
-          >
-            <div>
-              <p
+          {[
+            {
+              label: "TECH = HIT",
+              score: "+100",
+              note: "snel — ze zijn zo weg",
+              border: "rgba(100,211,255,0.12)",
+            },
+            {
+              label: "HR = SKIP",
+              score: "−50",
+              note: "recruiters blijven hangen",
+              border: "rgba(255,77,77,0.18)",
+            },
+            {
+              label: "COMBO",
+              score: "×2 ×3 ×4",
+              note: "klik snel achter elkaar",
+              border: "rgba(255,143,53,0.18)",
+            },
+          ].map(function (r) {
+            return (
+              <div
+                key={r.label}
                 style={{
-                  margin: 0,
-                  fontSize: 12,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: BRAND.muted,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  gap: 16,
+                  padding: 18,
+                  borderRadius: 20,
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid " + r.border,
                 }}
               >
-                TECH = HIT
-              </p>
-              <p
-                style={{
-                  margin: "8px 0 0",
-                  fontSize: 20,
-                  fontFamily: "Archivo Black, sans-serif",
-                }}
-              >
-                +100
-              </p>
-            </div>
-            <p style={{ margin: 0, color: BRAND.muted, fontSize: 12 }}>
-              snel — ze zijn zo weg
-            </p>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "baseline",
-              gap: 16,
-              padding: 18,
-              borderRadius: 20,
-              background: "rgba(255,255,255,0.03)",
-              border: `1px solid rgba(255,77,77,0.18)`,
-            }}
-          >
-            <div>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 12,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: BRAND.muted,
-                }}
-              >
-                HR = SKIP
-              </p>
-              <p
-                style={{
-                  margin: "8px 0 0",
-                  fontSize: 20,
-                  fontFamily: "Archivo Black, sans-serif",
-                }}
-              >
-                −50
-              </p>
-            </div>
-            <p style={{ margin: 0, color: BRAND.muted, fontSize: 12 }}>
-              recruiters blijven hangen
-            </p>
-          </div>
+                <div>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 12,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: BRAND.muted,
+                    }}
+                  >
+                    {r.label}
+                  </p>
+                  <p
+                    style={{
+                      margin: "8px 0 0",
+                      fontSize: 20,
+                      fontFamily: "Archivo Black, sans-serif",
+                    }}
+                  >
+                    {r.score}
+                  </p>
+                </div>
+                <p style={{ margin: 0, color: BRAND.muted, fontSize: 12 }}>
+                  {r.note}
+                </p>
+              </div>
+            );
+          })}
         </div>
         <button
           onClick={onStart}
@@ -563,8 +681,7 @@ function CountdownOverlay({ countdown }) {
       <div style={{ textAlign: "center", color: BRAND.text }}>
         <p
           style={{
-            margin: 0,
-            marginBottom: 14,
+            margin: "0 0 14px",
             color: BRAND.muted,
             letterSpacing: "0.24em",
             textTransform: "uppercase",
@@ -577,11 +694,12 @@ function CountdownOverlay({ countdown }) {
             width: 180,
             height: 180,
             borderRadius: "50%",
-            border: `1px solid rgba(255,255,255,0.1)`,
+            border: "1px solid rgba(255,255,255,0.1)",
             display: "grid",
             placeItems: "center",
             margin: "0 auto 24px",
             backdropFilter: "blur(10px)",
+            animation: "popIn 0.3s ease-out",
           }}
         >
           <span
@@ -598,21 +716,21 @@ function CountdownOverlay({ countdown }) {
   );
 }
 
-function WinScreen({ hits, timeLeft, onRetry, onClaim }) {
+function WinScreen({ hits, score, onRetry }) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = async () => {
+  const handleSubmit = async function () {
     if (!email || submitting) return;
     setSubmitting(true);
-    trackEvent("Lead", { email });
-    await new Promise((r) => setTimeout(r, 900));
+    trackEvent("Lead", { email: email });
+    await new Promise(function (r) {
+      setTimeout(r, 900);
+    });
     setSubmitting(false);
     setSubmitted(true);
     trackEvent("DiscountClaimed", { code: DISCOUNT_CODE });
   };
-
   return (
     <div
       style={{
@@ -630,7 +748,7 @@ function WinScreen({ hits, timeLeft, onRetry, onClaim }) {
           width: "100%",
           maxWidth: 640,
           borderRadius: 32,
-          border: `1px solid ${BRAND.panelBorder}`,
+          border: "1px solid " + BRAND.panelBorder,
           background: "rgba(15,17,18,0.98)",
           padding: 32,
           boxShadow: "0 48px 110px rgba(0,0,0,0.4)",
@@ -675,20 +793,62 @@ function WinScreen({ hits, timeLeft, onRetry, onClaim }) {
             </h2>
           </div>
         </div>
-        <p style={{ color: BRAND.muted, lineHeight: 1.8, marginBottom: 22 }}>
-          Met {hits} hits in {Math.ceil(timeLeft)} seconden heb je laten zien
-          dat het scoren van tech-talent geen makkelijke prooi is. Vul je e-mail
-          in en claim de code.
+        <p style={{ color: BRAND.muted, lineHeight: 1.8, marginBottom: 6 }}>
+          Met {hits} hits en {score} punten heb je bewezen dat tech-talent
+          scoren geen toeval is. Claim nu jouw kortingscode!
         </p>
-        <div style={{ display: "grid", gap: 14, marginBottom: 28 }}>
+
+        {/* Kortingscode blok — altijd zichtbaar als highlight */}
+        <div
+          style={{
+            padding: 22,
+            borderRadius: 22,
+            marginBottom: 18,
+            background:
+              "linear-gradient(135deg, rgba(255,143,53,0.15), rgba(255,190,89,0.08))",
+            border: "1px solid rgba(255,143,53,0.3)",
+          }}
+        >
+          <p
+            style={{
+              margin: "0 0 6px",
+              fontSize: 12,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: BRAND.accent,
+            }}
+          >
+            Jouw kortingscode
+          </p>
+          <p
+            style={{
+              margin: "0 0 10px",
+              fontSize: 36,
+              fontFamily: "Archivo Black, sans-serif",
+              letterSpacing: "0.12em",
+              color: BRAND.text,
+            }}
+          >
+            {DISCOUNT_CODE}
+          </p>
+          <p style={{ margin: 0, fontSize: 13, color: BRAND.muted }}>
+            Vul je e-mail in om de code per mail te ontvangen + tips over
+            recruitment marketing.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gap: 14, marginBottom: 22 }}>
           <input
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={function (e) {
+              setEmail(e.target.value);
+            }}
             placeholder="jouw@email.nl"
+            type="email"
             style={{
               width: "100%",
               borderRadius: 16,
-              border: `1px solid rgba(255,255,255,0.12)`,
+              border: "1px solid rgba(255,255,255,0.12)",
               background: "rgba(255,255,255,0.04)",
               color: BRAND.text,
               padding: "16px 18px",
@@ -702,7 +862,7 @@ function WinScreen({ hits, timeLeft, onRetry, onClaim }) {
               width: "100%",
               border: "none",
               borderRadius: 18,
-              padding: "16px 18px",
+              padding: "18px 18px",
               fontSize: 17,
               fontFamily: "Archivo Black, sans-serif",
               background: "linear-gradient(135deg, #ffbe59 0%, #ff8f35 100%)",
@@ -711,69 +871,66 @@ function WinScreen({ hits, timeLeft, onRetry, onClaim }) {
               opacity: email ? 1 : 0.55,
             }}
           >
-            Claim korting
+            {submitting ? "Verzenden..." : "Ontvang code per e-mail"}
           </button>
         </div>
-        {submitted ? (
+        {submitted && (
           <div
             style={{
               padding: 18,
               borderRadius: 20,
-              background: "rgba(74, 222, 128, 0.12)",
-              border: "1px solid rgba(74, 222, 128, 0.2)",
+              background: "rgba(74,222,128,0.12)",
+              border: "1px solid rgba(74,222,128,0.2)",
               color: BRAND.success,
+              marginBottom: 18,
             }}
           >
-            <p style={{ margin: 0, fontWeight: 600 }}>
-              Top! Je korting is onderweg. Gebruik de code{" "}
-              <strong>{DISCOUNT_CODE}</strong> in de campagneflow.
+            <p style={{ margin: "0 0 8px", fontWeight: 600 }}>
+              Check je inbox — code <strong>{DISCOUNT_CODE}</strong> is
+              onderweg.
             </p>
           </div>
-        ) : null}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: 14,
-            marginTop: 28,
-            flexWrap: "wrap",
-          }}
-        >
-          <button
-            onClick={() => {
-              onRetry();
-              trackEvent("CTAClick", { label: "Speel opnieuw" });
+        )}
+        <div style={{ display: "grid", gap: 14 }}>
+          <a
+            href="https://vacaturekanon.nl"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={function () {
+              trackEvent("CTAClick", { label: "Vacaturekanon_Win" });
             }}
             style={{
-              flex: 1,
-              minWidth: 160,
+              display: "block",
+              textAlign: "center",
+              textDecoration: "none",
+              borderRadius: 18,
+              border: "none",
+              padding: "16px 18px",
+              fontSize: 16,
+              fontFamily: "Archivo Black, sans-serif",
+              background: BRAND.accent,
+              color: "#111",
+              cursor: "pointer",
+            }}
+          >
+            Bekijk Vacaturekanon.nl
+          </a>
+          <button
+            onClick={function () {
+              onRetry();
+              trackEvent("CTAClick", { label: "Retry" });
+            }}
+            style={{
               borderRadius: 18,
               border: "1px solid rgba(255,255,255,0.12)",
               background: "rgba(255,255,255,0.04)",
               color: BRAND.text,
-              padding: "16px 18px",
+              padding: "14px 18px",
               cursor: "pointer",
+              fontSize: 14,
             }}
           >
             Speel nog een keer
-          </button>
-          <button
-            onClick={() => {
-              onRetry();
-              trackEvent("CTAClick", { label: "Terug naar start" });
-            }}
-            style={{
-              flex: 1,
-              minWidth: 160,
-              borderRadius: 18,
-              border: "none",
-              background: BRAND.accent,
-              color: "#111",
-              padding: "16px 18px",
-              cursor: "pointer",
-            }}
-          >
-            Terug naar start
           </button>
         </div>
       </div>
@@ -799,7 +956,7 @@ function LoseScreen({ onRetry }) {
           width: "100%",
           maxWidth: 620,
           borderRadius: 32,
-          border: `1px solid ${BRAND.panelBorder}`,
+          border: "1px solid " + BRAND.panelBorder,
           background: "rgba(15,17,18,0.98)",
           padding: 34,
           boxShadow: "0 46px 110px rgba(0,0,0,0.4)",
@@ -828,245 +985,300 @@ function LoseScreen({ onRetry }) {
           afvuurt.
         </h2>
         <p style={{ margin: "22px 0 0", color: BRAND.muted, lineHeight: 1.8 }}>
-          Je bent er dichtbij geweest, maar 8 hits in 25 seconden is geen
-          cadeautje. Probeer het nog eens en benut de concurrentie om je
-          voordeel te doen.
+          8 hits in 25 seconden is geen cadeautje. Wij schieten dagelijks
+          vacatures raak voor onze klanten.
         </p>
-        <button
-          onClick={() => {
-            onRetry();
-            trackEvent("CTAClick", { label: "Retry" });
-          }}
-          style={{
-            marginTop: 28,
-            border: "none",
-            borderRadius: 18,
-            padding: "18px 22px",
-            fontSize: 17,
-            fontFamily: "Archivo Black, sans-serif",
-            background: "linear-gradient(135deg, #ff8f35 0%, #ffbe59 100%)",
-            color: "#111",
-            cursor: "pointer",
-          }}
-        >
-          Opnieuw
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function TweaksPanel({ hapticEnabled, setHapticEnabled }) {
-  return (
-    <div
-      style={{
-        padding: "16px 18px",
-        borderRadius: 22,
-        border: `1px solid ${BRAND.panelBorder}`,
-        background: "rgba(15,17,18,0.92)",
-        color: BRAND.text,
-        display: "grid",
-        gap: 12,
-        marginTop: 18,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: 12,
-          alignItems: "center",
-        }}
-      >
-        <div>
-          <p
-            style={{
-              margin: 0,
-              fontSize: 13,
-              textTransform: "uppercase",
-              letterSpacing: "0.18em",
-              color: BRAND.muted,
+        <div style={{ display: "grid", gap: 14, marginTop: 28 }}>
+          <a
+            href="https://vacaturekanon.nl"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={function () {
+              trackEvent("CTAClick", { label: "Vacaturekanon_Lose" });
             }}
-          >
-            Game tweaks
-          </p>
-          <p style={{ margin: "8px 0 0", fontSize: 14, color: BRAND.text }}>
-            Kleine instellingen voor demo en analytics.
-          </p>
-        </div>
-        <div style={{ display: "grid", gap: 8, minWidth: 140 }}>
-          <button
-            type="button"
-            onClick={() => setHapticEnabled((v) => !v)}
             style={{
-              width: "100%",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 16,
-              padding: "10px",
-              color: BRAND.text,
-              background: hapticEnabled
-                ? "rgba(100,211,255,0.14)"
-                : "rgba(255,255,255,0.04)",
+              display: "block",
+              textAlign: "center",
+              textDecoration: "none",
+              border: "none",
+              borderRadius: 18,
+              padding: "18px 22px",
+              fontSize: 17,
+              fontFamily: "Archivo Black, sans-serif",
+              background: "linear-gradient(135deg, #ff8f35 0%, #ffbe59 100%)",
+              color: "#111",
               cursor: "pointer",
             }}
           >
-            {hapticEnabled ? "Haptics aan" : "Haptics uit"}
+            Bekijk Vacaturekanon.nl
+          </a>
+          <button
+            onClick={function () {
+              onRetry();
+              trackEvent("CTAClick", { label: "Retry" });
+            }}
+            style={{
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: 18,
+              padding: "16px 22px",
+              fontSize: 15,
+              background: "rgba(255,255,255,0.04)",
+              color: BRAND.text,
+              cursor: "pointer",
+            }}
+          >
+            Probeer opnieuw
           </button>
         </div>
-      </div>
-      <div style={{ fontSize: 12, color: BRAND.muted, lineHeight: 1.7 }}>
-        Discount code en pixel hooks zijn bovenaan `game.jsx` gedefinieerd. De
-        game logica blijft visueel identiek aan het prototype, maar is pittiger
-        en rijper voor campagnegebruik.
       </div>
     </div>
   );
 }
 
-function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetSkip }) {
+/* ── GameField with particles, popups & screen shake ── */
+function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetMiss }) {
   const [targets, setTargets] = useState([]);
-  const stateRef = useRef({
-    lastTime: performance.now(),
-    elapsed: 0,
-    accumulator: 0,
-    nextId: 1,
-  });
+  const [particles, setParticles] = useState([]);
+  const [popups, setPopups] = useState([]);
+  const [shake, setShake] = useState({ x: 0, y: 0 });
+  const [pacman, setPacman] = useState({ x: 50, y: 50, dx: 1, age: 0 });
+  const stateRef = useRef({ lastTime: 0, elapsed: 0, acc: 0, nextId: 1 });
+  const pacRef = useRef({ x: 50, y: 50, dx: 1, targetId: null });
   const frameRef = useRef(null);
-  const fieldRef = useRef(null);
+  const particleBaseRef = useRef({});
 
-  const spawnInterval = (elapsed) => Math.max(0.45, 1.0 - elapsed * 0.022);
-  const skipBias = (elapsed) => 0.45 + Math.min(0.25, elapsed / 80);
+  var spawnInterval = function (t) {
+    return Math.max(0.45, 1.0 - t * 0.022);
+  };
+  var skipBias = function (t) {
+    return 0.45 + Math.min(0.25, t / 80);
+  };
 
-  const createTarget = (elapsed) => {
-    const role = Math.random() < skipBias(elapsed) ? "HR" : "TECH";
-    const lifetime =
+  var createTarget = function (elapsed) {
+    var role = Math.random() < skipBias(elapsed) ? "HR" : "TECH";
+    var lifetime =
       role === "TECH"
         ? 1.0 + randomBetween(0, 0.6)
         : 1.6 + randomBetween(0, 0.8);
-    const flipAt =
+    var flipAt =
       role === "TECH" && Math.random() < 0.1
         ? lifetime * randomBetween(0.45, 0.55)
         : null;
-    const contested = role === "TECH" && Math.random() < 0.15;
-    const x = randomBetween(14, 86);
-    const y = randomBetween(18, 76);
-    const vx = role === "TECH" ? randomBetween(-6, 6) : 0;
-    const vy = role === "TECH" ? randomBetween(-4, 4) : 0;
-
+    var contested = role === "TECH" && Math.random() < 0.15;
     return {
-      id: stateRef.current.nextId,
-      role,
-      x,
-      y,
-      vx,
-      vy,
-      lifetime,
+      id: stateRef.current.nextId++,
+      role: role,
+      lifetime: lifetime,
       age: 0,
-      flipAt,
+      flipAt: flipAt,
       flipped: false,
-      contested,
+      contested: contested,
       contestedDuration: 0.6,
+      x: randomBetween(14, 86),
+      y: randomBetween(18, 76),
+      vx: role === "TECH" ? randomBetween(-6, 6) : 0,
+      vy: role === "TECH" ? randomBetween(-4, 4) : 0,
     };
   };
 
-  useEffect(() => {
-    if (!isPlaying) {
-      setTargets([]);
-      return;
-    }
-
-    stateRef.current = {
-      lastTime: performance.now(),
-      elapsed: 0,
-      accumulator: 0,
-      nextId: 1,
-    };
-    setTargets([]);
-
-    const step = (now) => {
-      const state = stateRef.current;
-      const dt = Math.min(0.05, (now - state.lastTime) / 1000);
-      state.lastTime = now;
-      state.elapsed += dt;
-      state.accumulator += dt;
-      const interval = spawnInterval(state.elapsed);
-      const spawnCount = Math.floor(state.accumulator / interval);
-      if (spawnCount > 0) {
-        state.accumulator -= spawnCount * interval;
-      }
-
-      setTargets((prev) => {
-        const nextTargets = [];
-        for (const target of prev) {
-          let updated = { ...target, age: target.age + dt };
-          if (updated.role === "TECH" && !updated.flipped) {
-            updated.x = clamp(updated.x + updated.vx * dt, 12, 88);
-            updated.y = clamp(updated.y + updated.vy * dt, 16, 78);
-            if (updated.flipAt && updated.age >= updated.flipAt) {
-              updated = { ...updated, flipped: true };
-            }
-          }
-
-          const expiredByContest =
-            updated.contested &&
-            !updated.flipped &&
-            updated.age >= updated.contestedDuration;
-          if (expiredByContest) {
-            continue;
-          }
-          if (updated.age >= updated.lifetime) {
-            continue;
-          }
-          nextTargets.push(updated);
-        }
-
-        for (let i = 0; i < spawnCount; i += 1) {
-          const next = createTarget(state.elapsed);
-          next.id = state.nextId;
-          state.nextId += 1;
-          nextTargets.push(next);
-        }
-
-        return nextTargets;
+  var spawnParticles = function (x, y, color, count) {
+    count = count || 8;
+    var now = performance.now();
+    var ps = [];
+    for (var i = 0; i < count; i++) {
+      ps.push({
+        id: uid(),
+        baseX: x,
+        baseY: y,
+        vx: randomBetween(-120, 120),
+        vy: randomBetween(-160, 40),
+        size: randomBetween(3, 7),
+        color: color,
+        life: randomBetween(0.3, 0.6),
+        born: now,
+        opacity: 1,
+        x: x + "%",
+        y: y + "%",
       });
-
-      onTimeUpdate(state.elapsed);
-      frameRef.current = requestAnimationFrame(step);
-    };
-
-    frameRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frameRef.current);
-  }, [isPlaying]);
-
-  const handleClick = (id) => {
-    setTargets((prev) => {
-      const clicked = prev.find((item) => item.id === id);
-      if (!clicked) return prev;
-      const isHit = clicked.role === "TECH" && !clicked.flipped;
-      if (isHit) {
-        onTargetHit();
-      } else {
-        onTargetSkip();
-      }
-      return prev.filter((item) => item.id !== id);
+    }
+    setParticles(function (prev) {
+      return prev.concat(ps);
     });
   };
 
+  var spawnPopup = function (x, y, text, color, combo) {
+    combo = combo || 1;
+    setPopups(function (prev) {
+      return prev.concat([
+        {
+          id: uid(),
+          baseX: x,
+          baseY: y,
+          x: x + "%",
+          y: y + "%",
+          text: text,
+          color: color,
+          vy: -80,
+          life: 0.7,
+          born: performance.now(),
+          opacity: 1,
+          combo: combo,
+        },
+      ]);
+    });
+  };
+
+  var doShake = function (intensity) {
+    intensity = intensity || 4;
+    setShake({
+      x: randomBetween(-intensity, intensity),
+      y: randomBetween(-intensity, intensity),
+    });
+    setTimeout(function () {
+      setShake({ x: 0, y: 0 });
+    }, 80);
+  };
+
+  useEffect(
+    function () {
+      if (!isPlaying) {
+        setTargets([]);
+        setParticles([]);
+        setPopups([]);
+        return;
+      }
+      stateRef.current = {
+        lastTime: performance.now(),
+        elapsed: 0,
+        acc: 0,
+        nextId: 1,
+      };
+      setTargets([]);
+      setParticles([]);
+      setPopups([]);
+
+      var step = function (now) {
+        var s = stateRef.current;
+        var dt = Math.min(0.05, (now - s.lastTime) / 1000);
+        s.lastTime = now;
+        s.elapsed += dt;
+        s.acc += dt;
+        var interval = spawnInterval(s.elapsed);
+        var spawns = Math.floor(s.acc / interval);
+        if (spawns > 0) s.acc -= spawns * interval;
+
+        setTargets(function (prev) {
+          var next = [];
+          for (var i = 0; i < prev.length; i++) {
+            var t = prev[i];
+            var u = Object.assign({}, t, { age: t.age + dt });
+            if (u.role === "TECH" && !u.flipped) {
+              u.x = clamp(u.x + u.vx * dt, 12, 88);
+              u.y = clamp(u.y + u.vy * dt, 16, 78);
+              if (u.flipAt && u.age >= u.flipAt) u.flipped = true;
+            }
+            if (u.contested && !u.flipped && u.age >= u.contestedDuration)
+              continue;
+            if (u.age >= u.lifetime) continue;
+            next.push(u);
+          }
+          for (var j = 0; j < spawns; j++) next.push(createTarget(s.elapsed));
+          return next;
+        });
+
+        // update particles
+        setParticles(function (prev) {
+          var out = [];
+          for (var i = 0; i < prev.length; i++) {
+            var p = prev[i];
+            var age = (now - p.born) / 1000;
+            if (age >= p.life) continue;
+            var ratio = 1 - age / p.life;
+            out.push(
+              Object.assign({}, p, {
+                x: "calc(" + p.baseX + "% + " + p.vx * age + "px)",
+                y: "calc(" + p.baseY + "% + " + p.vy * age + "px)",
+                opacity: ratio,
+                size: p.size * ratio,
+              }),
+            );
+          }
+          return out;
+        });
+
+        // update popups
+        setPopups(function (prev) {
+          var out = [];
+          for (var i = 0; i < prev.length; i++) {
+            var p = prev[i];
+            var age = (now - p.born) / 1000;
+            if (age >= p.life) continue;
+            out.push(
+              Object.assign({}, p, {
+                y: "calc(" + p.baseY + "% + " + p.vy * age + "px)",
+                opacity: 1 - age / p.life,
+              }),
+            );
+          }
+          return out;
+        });
+
+        onTimeUpdate(s.elapsed);
+        frameRef.current = requestAnimationFrame(step);
+      };
+      frameRef.current = requestAnimationFrame(step);
+      return function () {
+        cancelAnimationFrame(frameRef.current);
+      };
+    },
+    [isPlaying],
+  );
+
+  var handleClick = useCallback(
+    function (id) {
+      setTargets(function (prev) {
+        var t = null;
+        for (var i = 0; i < prev.length; i++) {
+          if (prev[i].id === id) {
+            t = prev[i];
+            break;
+          }
+        }
+        if (!t) return prev;
+        var isHit = t.role === "TECH" && !t.flipped;
+        if (isHit) {
+          spawnParticles(t.x, t.y, BRAND.highlight, 10);
+          onTargetHit(t.x, t.y);
+          doShake(3);
+        } else {
+          spawnParticles(t.x, t.y, BRAND.negative, 6);
+          onTargetMiss(t.x, t.y);
+          doShake(6);
+        }
+        return prev.filter(function (i) {
+          return i.id !== id;
+        });
+      });
+    },
+    [onTargetHit, onTargetMiss],
+  );
+
   return (
     <div
-      ref={fieldRef}
       style={{
         position: "relative",
         minHeight: 520,
         borderRadius: 28,
-        border: `1px solid ${BRAND.panelBorder}`,
+        border: "1px solid " + BRAND.panelBorder,
         background:
           "radial-gradient(circle at top, rgba(100,211,255,0.06), transparent 42%), rgba(13,15,18,0.96)",
         overflow: "hidden",
         padding: 16,
+        transform: "translate(" + shake.x + "px," + shake.y + "px)",
+        transition: "transform 0.06s ease-out",
       }}
     >
-      <CrosshairCursor />
+      {/* field decorations */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
         <div
           style={{
@@ -1081,90 +1293,146 @@ function GameField({ isPlaying, onTimeUpdate, onTargetHit, onTargetSkip }) {
           }}
         />
       </div>
-      {targets.map((target) => (
-        <TargetCard key={target.id} target={target} onClick={handleClick} />
-      ))}
+      {targets.map(function (t) {
+        return <TargetCard key={t.id} target={t} onClick={handleClick} />;
+      })}
+      {particles.map(function (p) {
+        return <Particle key={p.id} p={p} />;
+      })}
+      {popups.map(function (p) {
+        return <ScorePopup key={p.id} popup={p} />;
+      })}
     </div>
   );
 }
 
+/* ── Main Game ── */
 function Game() {
-  const [screen, setScreen] = useState("start");
-  const [countdown, setCountdown] = useState(3);
-  const [elapsed, setElapsed] = useState(0);
-  const [hits, setHits] = useState(0);
-  const [skips, setSkips] = useState(0);
-  const [score, setScore] = useState(0);
-  const [hapticEnabled, setHapticEnabled] = useState(true);
+  var _s = useState("start"),
+    screen = _s[0],
+    setScreen = _s[1];
+  var _c = useState(3),
+    countdown = _c[0],
+    setCountdown = _c[1];
+  var _e = useState(0),
+    elapsed = _e[0],
+    setElapsed = _e[1];
+  var _h = useState(0),
+    hits = _h[0],
+    setHits = _h[1];
+  var _sc = useState(0),
+    score = _sc[0],
+    setScore = _sc[1];
+  var _co = useState(0),
+    combo = _co[0],
+    setCombo = _co[1];
+  var comboTimer = useRef(null);
 
-  useEffect(() => {
-    if (screen !== "playing") return;
-    if (hits >= WIN_HITS) {
-      setScreen("win");
-      trackEvent("GameWon", {
-        hits,
-        timeLeft: Math.max(0, GAME_DURATION - elapsed),
-      });
-    }
-  }, [hits, screen, elapsed]);
+  var resetCombo = function () {
+    if (comboTimer.current) clearTimeout(comboTimer.current);
+    comboTimer.current = setTimeout(function () {
+      setCombo(0);
+    }, 1200);
+  };
 
-  useEffect(() => {
-    if (screen !== "playing") return;
-    if (elapsed >= GAME_DURATION) {
-      setScreen("lose");
-      trackEvent("GameLost", { hits, timeLeft: 0 });
-    }
-  }, [elapsed, screen, hits]);
+  useEffect(
+    function () {
+      if (screen === "playing" && hits >= WIN_HITS) {
+        setScreen("win");
+        sfx.win();
+        trackEvent("GameWon", {
+          hits: hits,
+          score: score,
+          timeLeft: Math.max(0, GAME_DURATION - elapsed),
+        });
+      }
+    },
+    [hits, screen],
+  );
 
-  useEffect(() => {
-    let timer;
-    if (screen === "countdown") {
-      timer = setInterval(() => {
-        setCountdown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [screen]);
+  useEffect(
+    function () {
+      if (screen === "playing" && elapsed >= GAME_DURATION) {
+        setScreen("lose");
+        sfx.lose();
+        trackEvent("GameLost", { hits: hits, score: score, timeLeft: 0 });
+      }
+    },
+    [elapsed, screen],
+  );
 
-  useEffect(() => {
-    if (screen === "countdown" && countdown <= 0) {
-      setScreen("playing");
-      setCountdown(3);
-    }
-  }, [countdown, screen]);
+  useEffect(
+    function () {
+      if (screen === "countdown") {
+        sfx.tick();
+        var t = setInterval(function () {
+          setCountdown(function (p) {
+            return p - 1;
+          });
+        }, 1000);
+        return function () {
+          clearInterval(t);
+        };
+      }
+    },
+    [screen],
+  );
 
-  const handleStart = () => {
+  useEffect(
+    function () {
+      if (screen === "countdown" && countdown <= 0) {
+        sfx.start();
+        setScreen("playing");
+        setCountdown(3);
+      }
+    },
+    [countdown, screen],
+  );
+
+  var handleStart = function () {
     setHits(0);
-    setSkips(0);
     setScore(0);
     setElapsed(0);
+    setCombo(0);
     setScreen("countdown");
     trackEvent("GameStart", { variant: "Score Vacature" });
   };
 
-  const handleRetry = () => {
+  var handleRetry = function () {
     setHits(0);
-    setSkips(0);
     setScore(0);
     setElapsed(0);
+    setCombo(0);
     setScreen("start");
   };
 
-  const handleTargetHit = () => {
-    setHits((prev) => prev + 1);
-    setScore((prev) => prev + HIT_SCORE);
-    if (hapticEnabled && navigator.vibrate) {
-      navigator.vibrate([18, 8, 18]);
-    }
-  };
+  var handleHit = useCallback(function (x, y) {
+    setCombo(function (prev) {
+      var next = prev + 1;
+      var multiplier = Math.min(4, next);
+      var points = HIT_SCORE * multiplier;
+      setScore(function (s) {
+        return s + points;
+      });
+      setHits(function (h) {
+        return h + 1;
+      });
+      if (next > 2) sfx.combo();
+      else sfx.hit();
+      if (navigator.vibrate) navigator.vibrate([18, 8, 18]);
+      resetCombo();
+      return next;
+    });
+  }, []);
 
-  const handleTargetSkip = () => {
-    setSkips((prev) => prev + 1);
-    setScore((prev) => prev - MISS_PENALTY);
-    if (hapticEnabled && navigator.vibrate) {
-      navigator.vibrate([8]);
-    }
-  };
+  var handleMiss = useCallback(function (x, y) {
+    setScore(function (s) {
+      return s - MISS_PENALTY;
+    });
+    setCombo(0);
+    sfx.miss();
+    if (navigator.vibrate) navigator.vibrate([8]);
+  }, []);
 
   return (
     <div
@@ -1174,7 +1442,7 @@ function Game() {
         minHeight: "100%",
         padding: 26,
         display: "grid",
-        gap: 22,
+        gap: 18,
         alignContent: "start",
       }}
     >
@@ -1182,7 +1450,7 @@ function Game() {
       <div
         style={{
           display: "grid",
-          gap: 14,
+          gap: 10,
           maxWidth: 1120,
           width: "100%",
           margin: "0 auto",
@@ -1220,27 +1488,6 @@ function Game() {
               Schiet jij je vacature raak?
             </h1>
           </div>
-          <div style={{ display: "grid", gap: 10, justifyContent: "end" }}>
-            <p style={{ margin: 0, color: BRAND.muted, fontSize: 14 }}>
-              Meta-campagne lead-gen game met realistische speelbalans.
-            </p>
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-              <span
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: "rgba(255,255,255,0.05)",
-                  border: `1px solid rgba(255,255,255,0.08)`,
-                  padding: "10px 14px",
-                  borderRadius: 18,
-                }}
-              >
-                <strong style={{ color: BRAND.text }}>Pixel ID:</strong>{" "}
-                <span style={{ color: BRAND.muted }}>{FACEBOOK_PIXEL_ID}</span>
-              </span>
-            </div>
-          </div>
         </div>
 
         <HUD
@@ -1248,33 +1495,25 @@ function Game() {
           goal={WIN_HITS}
           timeLeft={Math.max(0, GAME_DURATION - elapsed)}
           score={score}
+          combo={combo}
         />
         <GameField
           isPlaying={screen === "playing"}
           onTimeUpdate={setElapsed}
-          onTargetHit={handleTargetHit}
-          onTargetSkip={handleTargetSkip}
-        />
-        <TweaksPanel
-          hapticEnabled={hapticEnabled}
-          setHapticEnabled={setHapticEnabled}
+          onTargetHit={handleHit}
+          onTargetMiss={handleMiss}
         />
       </div>
 
       {screen === "start" && <StartScreen onStart={handleStart} />}
       {screen === "countdown" && <CountdownOverlay countdown={countdown} />}
       {screen === "win" && (
-        <WinScreen
-          hits={hits}
-          timeLeft={Math.max(0, GAME_DURATION - elapsed)}
-          onRetry={handleRetry}
-          onClaim={() => {}}
-        />
+        <WinScreen hits={hits} score={score} onRetry={handleRetry} />
       )}
       {screen === "lose" && <LoseScreen onRetry={handleRetry} />}
     </div>
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+var root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<Game />);
