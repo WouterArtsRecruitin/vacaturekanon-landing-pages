@@ -137,6 +137,7 @@ function TargetCard({ target, onClick }) {
     cursor: "pointer",
     transition: "transform 0.14s ease, box-shadow 0.14s ease",
     zIndex: target.contested ? 7 : 5,
+    animation: isActiveTech ? "float 2s ease-in-out infinite" : isSkip ? "pulse 1.5s ease-in-out infinite" : "none",
   };
 
   const ring = target.contested ? (
@@ -168,12 +169,89 @@ function TargetCard({ target, onClick }) {
     </span>
   ) : null;
 
+  // Animated figure component
+  const AnimatedFigure = ({ isTech, color }) => (
+    <div style={{
+      width: 32,
+      height: 32,
+      position: "relative",
+      margin: "0 auto 8px",
+    }}>
+      {/* Head */}
+      <div style={{
+        width: 12,
+        height: 12,
+        borderRadius: "50%",
+        background: color,
+        position: "absolute",
+        top: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        boxShadow: `0 0 8px ${color}40`,
+        animation: isTech ? "bounce 1s ease-in-out infinite" : "none",
+      }} />
+
+      {/* Body */}
+      <div style={{
+        width: 8,
+        height: 14,
+        background: color,
+        position: "absolute",
+        top: 10,
+        left: "50%",
+        transform: "translateX(-50%)",
+        borderRadius: "4px 4px 2px 2px",
+        opacity: 0.9,
+      }} />
+
+      {/* Arms */}
+      <div style={{
+        width: 16,
+        height: 3,
+        background: color,
+        position: "absolute",
+        top: 14,
+        left: "50%",
+        transform: "translateX(-50%)",
+        borderRadius: "2px",
+        opacity: 0.8,
+        animation: isTech ? "wave 1.2s ease-in-out infinite" : "none",
+      }} />
+
+      {/* Legs */}
+      <div style={{
+        width: 3,
+        height: 6,
+        background: color,
+        position: "absolute",
+        top: 22,
+        left: 10,
+        borderRadius: "2px",
+        opacity: 0.7,
+        animation: isTech ? "walk 0.8s ease-in-out infinite" : "none",
+      }} />
+      <div style={{
+        width: 3,
+        height: 6,
+        background: color,
+        position: "absolute",
+        top: 22,
+        right: 10,
+        borderRadius: "2px",
+        opacity: 0.7,
+        animation: isTech ? "walk 0.8s ease-in-out infinite reverse" : "none",
+      }} />
+    </div>
+  );
+
   return (
     <button type="button" onClick={() => onClick(target.id)} style={cardStyles}>
       {ring}
       <div
         style={{ display: "grid", gap: 8, textAlign: "center", width: "100%" }}
       >
+        <AnimatedFigure isTech={isActiveTech} color={cardColor} />
+
         <div
           style={{
             display: "flex",
@@ -182,15 +260,6 @@ function TargetCard({ target, onClick }) {
             alignItems: "center",
           }}
         >
-          <span
-            style={{
-              width: 10,
-              height: 10,
-              borderRadius: "50%",
-              background: cardColor,
-              boxShadow: `0 0 14px ${cardColor}`,
-            }}
-          />
           <span
             style={{
               fontFamily: "Archivo Black, sans-serif",

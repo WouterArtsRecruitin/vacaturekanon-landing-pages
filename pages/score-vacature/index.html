@@ -32,6 +32,11 @@
       @keyframes burstFly { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-24px) scale(1.05); opacity: 0; } }
       @keyframes ringExpand { 0% { transform: scale(0.5); opacity: 0.5; } 80% { transform: scale(1.4); opacity: 0.2; } 100% { transform: scale(1.6); opacity: 0; } }
       @keyframes flashFade { 0% { opacity: 0.35; } 100% { opacity: 0; } }
+      @keyframes float { 0%, 100% { transform: translate(-50%, -50%) translateY(0px); } 50% { transform: translate(-50%, -50%) translateY(-4px); } }
+      @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.05); } }
+      @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0px); } 50% { transform: translateX(-50%) translateY(-2px); } }
+      @keyframes wave { 0%, 100% { transform: translateX(-50%) rotate(0deg); } 25% { transform: translateX(-50%) rotate(5deg); } 75% { transform: translateX(-50%) rotate(-5deg); } }
+      @keyframes walk { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(1px); } }
     </style>
   </head>
   <body>
