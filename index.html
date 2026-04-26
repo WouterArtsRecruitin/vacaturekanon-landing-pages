@@ -6,25 +6,40 @@
   <title>Vacaturekanon — Recruit. Automate. Dominate.</title>
   <meta name="description" content="Vacaturekanon schiet technische vacatures raak. Geen headhunters. Gewoon resultaat.">
 
-  <!-- Google Analytics (GA4) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3BDEP838GM"></script>
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vacaturekanon.nl/">
+  <meta property="og:title" content="Vacaturekanon — Recruit. Automate. Dominate.">
+  <meta property="og:description" content="Vacaturekanon schiet technische vacatures raak. Geen headhunters. Gewoon resultaat.">
+  <meta property="og:image" content="https://vacaturekanon.nl/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://vacaturekanon.nl/assets/og-image.png">
+
+  <!-- Consent default (deny until banner accept). GA4 + Meta + LinkedIn pixels load only after consent -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-3BDEP838GM');
+    // Consent Mode v2 defaults — deny everything until banner accept
+    gtag('consent','default',{
+      ad_storage:'denied',
+      ad_user_data:'denied',
+      ad_personalization:'denied',
+      analytics_storage:'denied',
+      functionality_storage:'granted',
+      security_storage:'granted',
+      wait_for_update:500
+    });
+    // Read prior choice from localStorage
+    try {
+      var c = JSON.parse(localStorage.getItem('vk_consent_v1') || 'null');
+      if (c && c.statistics) gtag('consent','update',{analytics_storage:'granted'});
+      if (c && c.marketing) gtag('consent','update',{
+        ad_storage:'granted', ad_user_data:'granted', ad_personalization:'granted'
+      });
+    } catch(_){}
   </script>
-
-  <!-- Meta Pixel -->
-  <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init','1430141541402009'); fbq('track','PageView');
-  </script>
-  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1430141541402009&ev=PageView&noscript=1"/></noscript>
 
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
@@ -358,6 +373,45 @@
       .fi{flex-direction:column;text-align:center}
       #blob-canvas{width:280px;height:280px;opacity:.45}
     }
+
+    /* ═══ MOBILE UX HARDENING (APK pattern) ═══ */
+    *{-webkit-tap-highlight-color:rgba(255,0,204,.18)}
+    @media(max-width:900px){
+      .fg input{font-size:16px;min-height:44px}
+      .wl-btn,.btn-orange,.btn-ghost,.nav-cta{min-height:44px}
+      .faq-q{min-height:44px}
+    }
+    /* Honeypot — visually hidden but reachable to bots */
+    .vk-hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+
+    /* ═══ CONSENT BANNER ═══ */
+    #vk-cb{
+      position:fixed;left:16px;right:16px;bottom:16px;z-index:10000;
+      max-width:760px;margin:0 auto;
+      background:rgba(11,8,25,.96);backdrop-filter:blur(14px);
+      border:1px solid rgba(255,255,255,.14);border-radius:16px;
+      padding:20px 22px;color:#f2eeff;font-family:'Plus Jakarta Sans',sans-serif;
+      box-shadow:0 14px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(255,0,204,.12);
+      display:none;
+    }
+    #vk-cb.show{display:block}
+    #vk-cb h5{font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+    #vk-cb p{font-size:13px;line-height:1.55;color:rgba(242,238,255,.72);margin-bottom:14px}
+    #vk-cb p a{color:#ff66dd;text-decoration:underline;text-underline-offset:2px}
+    .vk-cb-btns{display:flex;gap:8px;flex-wrap:wrap}
+    .vk-cb-btn{
+      flex:1 1 auto;min-height:44px;padding:10px 16px;border-radius:100px;
+      font-family:'Outfit',sans-serif;font-weight:700;font-size:13px;letter-spacing:.3px;
+      cursor:pointer;border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);color:#f2eeff;transition:all .2s var(--ease);
+    }
+    .vk-cb-btn:hover{background:rgba(255,255,255,.10)}
+    .vk-cb-btn.primary{background:var(--orange);border-color:transparent;color:#fff}
+    .vk-cb-btn.primary:hover{transform:scale(1.03);box-shadow:0 4px 22px var(--orange-glow)}
+    @media(max-width:600px){
+      #vk-cb{left:8px;right:8px;bottom:8px;padding:16px}
+      .vk-cb-btn{flex:1 1 100%}
+    }
   </style>
 </head>
 <body>
@@ -576,6 +630,8 @@
           <div class="fg"><label>Bedrijfsnaam</label><input name="co" placeholder="Jouw bedrijf B.V." required></div>
           <div class="fg"><label>E-mailadres</label><input type="email" name="em" placeholder="naam@bedrijf.nl" required></div>
           <div class="fg"><label>Telefoon <span style="opacity:.4;font-weight:400">(optioneel)</span></label><input name="ph" placeholder="+31 6 12 34 56 78"></div>
+          <!-- Honeypot — bots fill this, humans don't see it -->
+          <div class="vk-hp" aria-hidden="true"><label>Website <input name="website_url" tabindex="-1" autocomplete="off"></label></div>
           <button type="submit" class="wl-btn" id="wl-btn">Wachtlijst instappen →</button>
           <p class="wl-note">Geen spam. Direct bericht als er plek is.</p>
         </form>
@@ -620,15 +676,37 @@
       <li><a href="#services">Services</a></li>
       <li><a href="#process">Proces</a></li>
       <li><a href="#cta">Contact</a></li>
+      <li><a href="/privacy.html">Privacy</a></li>
+      <li><a href="/voorwaarden.html">Voorwaarden</a></li>
+      <li><a href="/verwerkersovereenkomst.html">Verwerkersovereenkomst</a></li>
+      <li><a href="#" onclick="vkOpenCookieSettings();return false;">Cookie-instellingen</a></li>
     </ul>
     <span class="foot-copy">© 2026 Recruitin B.V. — Doesburg</span>
   </div>
 </footer>
 
 <script>
+// UTM capture — read once, persist for 30d
+(function(){
+  try{
+    var u=new URLSearchParams(location.search), keys=['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid'], stored={};
+    var prior=JSON.parse(localStorage.getItem('vk_utm_v1')||'{}');
+    keys.forEach(function(k){ if(u.get(k)) stored[k]=u.get(k); });
+    if(Object.keys(stored).length){
+      stored._ts=Date.now();
+      localStorage.setItem('vk_utm_v1', JSON.stringify(Object.assign(prior,stored)));
+    }
+  }catch(_){}
+})();
 async function submitWL(e){
   e.preventDefault();
   const f=e.target,btn=document.getElementById('wl-btn');
+  // Honeypot check — silently succeed for bots
+  if(f.website_url && f.website_url.value){
+    document.getElementById('wl-form').style.display='none';
+    document.getElementById('wl-ok').style.display='block';
+    return;
+  }
   btn.textContent='Even geduld...';btn.disabled=true;
   const d=new FormData();
   d.append('q1_naam[first]',f.fn.value.trim());
@@ -636,12 +714,117 @@ async function submitWL(e){
   d.append('q2_bedrijfsnaam',f.co.value.trim());
   d.append('q4_zakelijkeMailadres',f.em.value.trim());
   if(f.ph.value.trim())d.append('q3_telefoonnummerOptioneel',f.ph.value.trim());
+  // UTMs in payload (Jotform accepts arbitrary fields, ignored if not configured)
+  try{
+    var utm=JSON.parse(localStorage.getItem('vk_utm_v1')||'{}');
+    Object.keys(utm).forEach(function(k){ if(k!=='_ts') d.append('utm_'+k.replace(/^utm_/,''), utm[k]); });
+    d.append('referrer', document.referrer || '');
+    d.append('landing_page', location.href);
+  }catch(_){}
   try{
     await fetch('https://submit.jotform.com/submit/260812912789365/',{method:'POST',body:d,mode:'no-cors'});
+    if (window.fbq) try{ fbq('track','Lead'); }catch(_){}
+    if (window.gtag) try{ gtag('event','generate_lead',{form:'waitlist'}); }catch(_){}
     document.getElementById('wl-form').style.display='none';
     document.getElementById('wl-ok').style.display='block';
   }catch{btn.textContent='Probeer opnieuw';btn.disabled=false;}
 }
+</script>
+
+<!-- ═══ CONSENT BANNER + GATED PIXELS ═══ -->
+<div id="vk-cb" role="dialog" aria-live="polite" aria-label="Cookie-toestemming">
+  <h5>Cookies & tracking</h5>
+  <p>We gebruiken functionele cookies (altijd) en — met jouw toestemming — analytics (GA4) en marketing pixels (Meta, LinkedIn) om campagnes te meten. Lees meer in onze <a href="/privacy.html">privacyverklaring</a>.</p>
+  <div class="vk-cb-btns">
+    <button type="button" class="vk-cb-btn" id="vk-cb-decline">Alleen functioneel</button>
+    <button type="button" class="vk-cb-btn" id="vk-cb-stats">Statistieken</button>
+    <button type="button" class="vk-cb-btn primary" id="vk-cb-accept">Alles accepteren</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='vk_consent_v1';
+  var GA_ID='G-MH4SLT0K4M'; // VK stream (was wrong: G-3BDEP838GM = recruitin stream)
+  var FB_PIXEL='1430141541402009';
+  var LI_PARTNER=''; // set when LinkedIn Insight Tag enabled
+
+  function loadGA(){
+    if (window.__vk_ga) return; window.__vk_ga=1;
+    var s=document.createElement('script'); s.async=true;
+    s.src='https://www.googletagmanager.com/gtag/js?id='+GA_ID;
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    gtag('config', GA_ID, {anonymize_ip:true});
+  }
+  function loadMeta(){
+    if (window.__vk_fb) return; window.__vk_fb=1;
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', FB_PIXEL); fbq('track','PageView');
+  }
+  function loadLI(){
+    if (!LI_PARTNER || window.__vk_li) return; window.__vk_li=1;
+    var s=document.createElement('script'); s.innerHTML='_linkedin_partner_id="'+LI_PARTNER+'";window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];window._linkedin_data_partner_ids.push("'+LI_PARTNER+'");';
+    document.head.appendChild(s);
+    var t=document.createElement('script'); t.async=true; t.src='https://snap.licdn.com/li.lms-analytics/insight.min.js';
+    document.head.appendChild(t);
+  }
+
+  function apply(c){
+    if (c.statistics) {
+      gtag('consent','update',{analytics_storage:'granted'});
+      loadGA();
+    }
+    if (c.marketing) {
+      gtag('consent','update',{ad_storage:'granted', ad_user_data:'granted', ad_personalization:'granted'});
+      loadMeta(); loadLI();
+    }
+    // Cookiebot-compatible shape so any code expecting window.Cookiebot.consent keeps working
+    window.Cookiebot = window.Cookiebot || {};
+    window.Cookiebot.consent = {
+      necessary:true, preferences:!!c.preferences, statistics:!!c.statistics, marketing:!!c.marketing,
+      method:c.method||'banner', stamp:c.stamp||Date.now()
+    };
+    window.dispatchEvent(new CustomEvent('CookiebotOnConsentReady'));
+  }
+
+  function save(c){
+    c.stamp = Date.now();
+    try { localStorage.setItem(KEY, JSON.stringify(c)); } catch(_){}
+    apply(c);
+  }
+
+  function showBanner(){ document.getElementById('vk-cb').classList.add('show'); }
+  function hideBanner(){ document.getElementById('vk-cb').classList.remove('show'); }
+
+  // Init
+  var prior=null; try { prior=JSON.parse(localStorage.getItem(KEY)||'null'); } catch(_){}
+  if (prior && (prior.statistics || prior.marketing || prior.method)) {
+    apply(prior);
+  } else {
+    // Defer banner show slightly to let blob/animations paint
+    setTimeout(showBanner, 800);
+  }
+
+  document.getElementById('vk-cb-accept').addEventListener('click', function(){
+    save({statistics:true, marketing:true, preferences:true, method:'accept-all'});
+    hideBanner();
+  });
+  document.getElementById('vk-cb-stats').addEventListener('click', function(){
+    save({statistics:true, marketing:false, preferences:false, method:'stats-only'});
+    hideBanner();
+  });
+  document.getElementById('vk-cb-decline').addEventListener('click', function(){
+    save({statistics:false, marketing:false, preferences:false, method:'decline'});
+    hideBanner();
+  });
+
+  // Public API for footer link
+  window.vkOpenCookieSettings = function(){ showBanner(); };
+})();
 </script>
 
 <script>
