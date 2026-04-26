@@ -2,6 +2,9 @@
   for = "/*"
   [headers.values]
     X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
     Cache-Control = "public, max-age=300, stale-while-revalidate=60"
 
 # /slug → /pages/slug/index.html (rewrite, niet redirect)
