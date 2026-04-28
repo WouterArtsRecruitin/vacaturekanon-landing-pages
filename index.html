@@ -725,6 +725,7 @@ async function submitWL(e){
     await fetch('https://submit.jotform.com/submit/260812912789365/',{method:'POST',body:d,mode:'no-cors'});
     if (window.fbq) try{ fbq('track','Lead'); }catch(_){}
     if (window.gtag) try{ gtag('event','generate_lead',{form:'waitlist'}); }catch(_){}
+    if (window.gtag) try{ gtag('event','form_submit',{form_name:'waitlist'}); }catch(_){}
     document.getElementById('wl-form').style.display='none';
     document.getElementById('wl-ok').style.display='block';
   }catch{btn.textContent='Probeer opnieuw';btn.disabled=false;}
